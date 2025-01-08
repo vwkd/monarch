@@ -1,3 +1,4 @@
+import { many } from "../parser.ts";
 import {
   createParser,
   filter,
@@ -10,7 +11,7 @@ import {
 } from "../parser.ts";
 
 /**
- * Parses a single character
+ * Parses the first character
  */
 export const item = createParser((input) => {
   if (input.length > 0) {
@@ -28,6 +29,14 @@ export const letter = filter(item, isLetter);
  * Parses a single digit
  */
 export const digit = map(filter(item, isDigit), Number.parseInt);
+
+/**
+ * Parses an integer
+ */
+export const integer = flatMap(
+  digit,
+  (a) => flatMap(many(digit), (rest) => unit(Number([a, ...rest].join("")))),
+);
 
 export const twoItems = sequence(item, item);
 export const twoItemsf = createParser((input) => {
