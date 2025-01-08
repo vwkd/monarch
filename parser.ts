@@ -33,6 +33,18 @@ export const unit = <T>(value: T): Parser<T> => {
 export const zero = (_: State) => [];
 
 /**
+ * Transforms a parser of type T into a parser of type U
+ */
+export const map = <T, U>(parser: Parser<T>, mapper: (value: T) => U) => {
+  return createParser((input) => {
+    return parser(input).map((result) => ({
+      ...result,
+      value: result?.value !== undefined ? mapper(result.value) : undefined,
+    }));
+  });
+};
+
+/**
  * Monadic sequencing of parsers
  */
 export const flatMap = <T, U>(
@@ -58,7 +70,7 @@ export const flatMap = <T, U>(
 /**
  * Makes a sequence of parses
  */
-const sequence = <T>(...parsers: Parser<T>[]) => {
+export const sequence = <T>(...parsers: Parser<T>[]) => {
   return createParser((input) =>
     parsers.reduce((prev, curr) => flatMap(prev, () => curr))(input)
   );
@@ -153,42 +165,3 @@ export const isLetter = (input: string) => /^[a-zA-Z]/.test(input);
 export const isDigit = (input: string) => /^\d/.test(input);
 export const isChar = (char: string) => (input: string) =>
   input.startsWith(char);
-
-/**
- * Basic parsers
- */
-
-export const item = createParser((input) => {
-  if (input.length > 0) {
-    return [success(input[0], input.slice(1))];
-  }
-  return [];
-});
-
-export const twoItems = sequence(item, item);
-export const twoItemsf = createParser((input) => {
-  return flatMap(item, (a) => flatMap(item, (b) => unit(a + b)))(input);
-});
-
-const char = (c: string): Parser<string> =>
-  createParser((input) => {
-    if (input.startsWith(c)) {
-      return [success(c, input.slice(1))];
-    } else {
-      return [
-        failure(`Expected ${c}, but got '${input[0] || "EOI"}'`),
-      ];
-    }
-  });
-
-const digit = createParser((input) => {
-  return /^\d/.test(input)
-    ? [{ value: input[0], remaining: input.slice(1) }]
-    : [failure(`Expected a digit but got ${input[0] || "EOI"}`)];
-});
-
-export const letter = createParser((input) => {
-  return /^[a-zA-Z]/.test(input)
-    ? [{ value: input[0], remaining: input.slice(1) }]
-    : [failure(`Expected a letter but got ${input[0] || "EOI"}`)];
-});
