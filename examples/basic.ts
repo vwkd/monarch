@@ -43,16 +43,25 @@ export const twoItemsf = createParser((input) => {
   return flatMap(item, (a) => flatMap(item, (b) => unit(a + b)))(input);
 });
 
-const char = (c: string) =>
-  createParser((input) => {
-    if (input.startsWith(c)) {
-      return [{ value: c, remaining: input.slice(1) }];
+/**
+ * Parses single characters or keywords
+ */
+export const literal = (value: string) => {
+  return createParser((input) => {
+    if (input.startsWith(value)) {
+      return [{ value: value, remaining: input.slice(value.length) }];
     } else {
       return [
-        { error: (`Expected ${c}, but got '${input[0] || "EOI"}'`) },
+        {
+          error:
+            (`Expected ${value}, but got '${
+              input.slice(0, value.length) || "EOI"
+            }'`),
+        },
       ];
     }
   });
+};
 
 const assertDigit = createParser((input) => {
   return /^\d/.test(input)
