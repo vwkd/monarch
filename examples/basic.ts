@@ -2,10 +2,8 @@ import { many } from "../parser.ts";
 import {
   createParser,
   filter,
-  flatMap,
   isDigit,
   isLetter,
-  map,
   sequence,
   unit,
 } from "../parser.ts";
@@ -28,20 +26,17 @@ export const letter = filter(item, isLetter);
 /**
  * Parses a single digit
  */
-export const digit = map(filter(item, isDigit), Number.parseInt);
+export const digit = filter(item, isDigit).map(Number.parseInt);
 
 /**
  * Parses an integer
  */
-export const integer = flatMap(
-  digit,
-  (a) => flatMap(many(digit), (rest) => unit(Number([a, ...rest].join("")))),
+export const integer = digit.bind(
+  (a) => many(digit).bind((rest) => unit(Number([a, ...rest].join("")))),
 );
 
 export const twoItems = sequence(item, item);
-export const twoItemsf = createParser((input) => {
-  return flatMap(item, (a) => flatMap(item, (b) => unit(a + b)))(input);
-});
+export const twoItemsf = item.bind((a) => item.bind((b) => unit(a + b)));
 
 /**
  * Parses a single character or a keyword

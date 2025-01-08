@@ -1,4 +1,3 @@
-type Parser<T> = (input: State) => ParseResult<T>[];
 type State = string;
 
 type ParseResult<T> = {
@@ -7,7 +6,7 @@ type ParseResult<T> = {
   error?: string;
 };
 
-class Parse<T> {
+class Parser<T> {
   parse: (input: State) => ParseResult<T>[];
 
   constructor(parse: (input: State) => ParseResult<T>[]) {
@@ -31,9 +30,9 @@ class Parse<T> {
   /**
    * Applies a function parser to a lifted value
    */
-  apply<U>(fn: Parser<(value: T) => U>): Parser<U> {
+  apply<U>(fn: Parser<(value: T) => U>) {
     return createParser((input: State) => {
-      return fn(input).flatMap(({ value, remaining, error }) => {
+      return fn.parse(input).flatMap(({ value, remaining, error }) => {
         if (value && remaining !== undefined) {
           return this.parse(remaining).map((res) => {
             if (res.value && res.remaining) {
@@ -60,29 +59,31 @@ class Parse<T> {
   /**
    * Monadic sequencing of parsers
    */
-  bind<U>(transform: (value: T) => Parser<U>): Parser<U> {
-    return (input: State) => {
+  bind<U>(transform: (value: T) => Parser<U>) {
+    return createParser((input: State) => {
       return this.parse(input).flatMap(({ value, remaining, error }) => {
         if (value !== undefined && remaining !== undefined) {
-          return transform(value)(remaining);
+          return transform(value).parse(remaining);
         } else if (error) {
           return [{ error }];
         }
         return [];
       });
-    };
+    });
   }
 }
 
 // Helpers
 
-export const createParser = <T>(fn: Parser<T>): Parser<T> => fn;
+export const createParser = <T>(
+  fn: (input: State) => ParseResult<T>[],
+): Parser<T> => new Parser(fn);
 
 /**
  * The empty parser
  */
 export const unit = <T>(value: T): Parser<T> => {
-  return (remaining: State) => [{ value, remaining }];
+  return createParser((remaining: State) => [{ value, remaining }]);
 };
 
 /**
@@ -90,37 +91,6 @@ export const unit = <T>(value: T): Parser<T> => {
  * It also is an absorbing element of flatMap
  */
 export const zero = (_: State) => [];
-
-/**
- * Transforms a parser of type T into a parser of type U
- */
-export const map = <T, U>(parser: Parser<T>, mapper: (value: T) => U) => {
-  return createParser((input) => {
-    return parser(input).map((result) => ({
-      ...result,
-      value: result?.value !== undefined ? mapper(result.value) : undefined,
-    }));
-  });
-};
-
-/**
- * Monadic sequencing of parsers
- */
-export const flatMap = <T, U>(
-  parser: Parser<T>,
-  transform: (value: T) => Parser<U>,
-): Parser<U> => {
-  return (input: State) => {
-    return parser(input).flatMap(({ value, remaining, error }) => {
-      if (value !== undefined && remaining !== undefined) {
-        return transform(value)(remaining);
-      } else if (error) {
-        return [{ error }];
-      }
-      return [];
-    });
-  };
-};
 
 // Combinators
 
@@ -131,7 +101,7 @@ export const flatMap = <T, U>(
  */
 export const sequence = <T>(...parsers: Parser<T>[]) => {
   return createParser((input) =>
-    parsers.reduce((prev, curr) => flatMap(prev, () => curr))(input)
+    parsers.reduce((prev, curr) => prev.bind(() => curr)).parse(input)
   );
 };
 
@@ -142,7 +112,7 @@ export const sequence = <T>(...parsers: Parser<T>[]) => {
  */
 export const any = <T>(...parsers: Parser<T>[]) => {
   return createParser((input) => {
-    const results = parsers.flatMap((parser) => parser(input));
+    const results = parsers.flatMap((parser) => parser.parse(input));
 
     if (results.some((res) => res.value !== undefined)) {
       return results.filter((res) => res.value !== undefined);
@@ -157,10 +127,12 @@ export const any = <T>(...parsers: Parser<T>[]) => {
 /**
  * Only returns the first successful parse results
  */
-export const first = <T>(...parsers: Parser<T>[]): Parser<T> => {
+export const first = <T>(
+  ...parsers: Parser<T>[]
+): Parser<T> => {
   return createParser((input) => {
     for (const parser of parsers) {
-      const results = parser(input);
+      const results = parser.parse(input);
       if (results.find((result) => result.value !== undefined)) {
         return results;
       }
@@ -177,12 +149,11 @@ export const first = <T>(...parsers: Parser<T>[]): Parser<T> => {
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
   return createParser((input) => {
     return any(
-      flatMap(
-        parser,
-        (a) => flatMap(iterate(parser), (x) => unit([a, ...x])),
+      parser.bind(
+        (a) => (iterate(parser).bind((x) => unit([a, ...x]))),
       ),
       unit([]),
-    )(input);
+    ).parse(input);
   });
 };
 
@@ -192,9 +163,9 @@ export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
 export const many = <T>(parser: Parser<T>): Parser<T[]> => {
   return createParser((input) => {
     return first(
-      flatMap(parser, (a) => flatMap(many(parser), (x) => unit([a, ...x]))),
+      parser.bind((a) => many(parser).bind((x) => unit([a, ...x]))),
       unit([]),
-    )(input);
+    ).parse(input);
   });
 };
 
@@ -208,13 +179,13 @@ export const filter = <T>(
   predicate: (value: T) => boolean,
   error?: string,
 ): Parser<T> => {
-  return flatMap(parser, (value) => {
+  return parser.bind((value) => {
     if (predicate(value)) {
       return unit(value);
     } else if (error) {
-      return () => [{ error }];
+      return createParser(() => [{ error }]);
     }
-    return zero;
+    return createParser(zero);
   });
 };
 
