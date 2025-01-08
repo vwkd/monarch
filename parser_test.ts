@@ -1,20 +1,13 @@
 import { assertEquals } from "@std/assert";
+import { any, filter, flatMap, isChar, iterate, many, zero } from "./parser.ts";
 import {
-  any,
-  filter,
-  flatMap,
-  isChar,
-  isDigit,
-  isLetter,
+  digit,
   item,
-  iterate,
   letter,
-  many,
+  integer,
   twoItems,
   twoItemsf,
-  unit,
-  zero,
-} from "./parser.ts";
+} from "./examples/basic.ts";
 
 Deno.test("item", () => {
   assertEquals(item(""), []);
@@ -54,19 +47,15 @@ Deno.test("zero is an absorbing element of flatMap", () => {
   assertEquals(flatMap(item, () => zero)("m"), zero("m"));
 });
 
-const letter2 = filter(item, isLetter);
-
 Deno.test("filter", () => {
   assertEquals(letter("m"), [{ value: "m", remaining: "" }]);
-  assertEquals(letter2("m"), [{ value: "m", remaining: "" }]);
+  assertEquals(letter("m"), [{ value: "m", remaining: "" }]);
 });
 
-const digit2 = flatMap(filter(item, isDigit), (value) => unit(Number(value)));
-
 Deno.test("digit", () => {
-  assertEquals(digit2("a"), []);
-  assertEquals(digit2("2"), [{ value: 2, remaining: "" }]);
-  assertEquals(digit2("23"), [{ value: 2, remaining: "3" }]);
+  assertEquals(digit("a"), []);
+  assertEquals(digit("2"), [{ value: 2, remaining: "" }]);
+  assertEquals(digit("23"), [{ value: 2, remaining: "3" }]);
 });
 
 const char = filter(item, isChar("m"));
@@ -76,7 +65,7 @@ Deno.test("char", () => {
 });
 
 Deno.test("iterate", () => {
-  assertEquals(iterate(digit2)("23 and more"), [
+  assertEquals(iterate(digit)("23 and more"), [
     { value: [2, 3], remaining: " and more" },
     { value: [2], remaining: "3 and more" },
     { value: [], remaining: "23 and more" },
@@ -84,27 +73,22 @@ Deno.test("iterate", () => {
 });
 
 Deno.test("many", () => {
-  assertEquals(many(digit2)("23 and more"), [
+  assertEquals(many(digit)("23 and more"), [
     { value: [2, 3], remaining: " and more" },
   ]);
 
-  // Matches 0 or more
-  assertEquals(many(digit2)("a"), [
+  // Matches 0 or more times
+  assertEquals(many(digit)("a"), [
     { value: [], remaining: "a" },
   ]);
 });
 
-const number = flatMap(
-  digit2,
-  (a) => flatMap(many(digit2), (rest) => unit(Number([a, ...rest].join("")))),
-);
-
 Deno.test("number", () => {
-  assertEquals(number("23 and more"), [
+  assertEquals(integer("23 and more"), [
     { value: 23, remaining: " and more" },
   ]);
 
-  assertEquals(number("and more"), []);
+  assertEquals(integer("and more"), []);
 });
 
 // Explore a search space
