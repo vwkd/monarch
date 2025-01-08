@@ -11,14 +11,6 @@ type ParseResult<T> = {
 
 export const createParser = <T>(fn: Parser<T>): Parser<T> => fn;
 
-export const success = <T>(value: T, remaining: State): ParseResult<T> => {
-  return { value, remaining };
-};
-
-export const failure = (error: string): ParseResult<never> => {
-  return { error };
-};
-
 /**
  * The empty parser
  */
@@ -153,7 +145,7 @@ export const filter = <T>(
     if (predicate(value)) {
       return unit(value);
     } else if (error) {
-      return () => [failure(error)];
+      return () => [{ error }];
     }
     return zero;
   });

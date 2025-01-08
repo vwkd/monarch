@@ -1,13 +1,11 @@
 import {
   createParser,
-  failure,
   filter,
   flatMap,
   isDigit,
   isLetter,
   map,
   sequence,
-  success,
   unit,
 } from "../parser.ts";
 
@@ -16,7 +14,7 @@ import {
  */
 export const item = createParser((input) => {
   if (input.length > 0) {
-    return [success(input[0], input.slice(1))];
+    return [{ value: input[0], remaining: input.slice(1) }];
   }
   return [];
 });
@@ -39,10 +37,10 @@ export const twoItemsf = createParser((input) => {
 const char = (c: string) =>
   createParser((input) => {
     if (input.startsWith(c)) {
-      return [success(c, input.slice(1))];
+      return [{ value: c, remaining: input.slice(1) }];
     } else {
       return [
-        failure(`Expected ${c}, but got '${input[0] || "EOI"}'`),
+        { error: (`Expected ${c}, but got '${input[0] || "EOI"}'`) },
       ];
     }
   });
@@ -50,11 +48,11 @@ const char = (c: string) =>
 const assertDigit = createParser((input) => {
   return /^\d/.test(input)
     ? [{ value: input[0], remaining: input.slice(1) }]
-    : [failure(`Expected a digit but got ${input[0] || "EOI"}`)];
+    : [{ error: `Expected a digit but got ${input[0] || "EOI"}` }];
 });
 
 export const assertletter = createParser((input) => {
   return /^[a-zA-Z]/.test(input)
     ? [{ value: input[0], remaining: input.slice(1) }]
-    : [failure(`Expected a letter but got ${input[0] || "EOI"}`)];
+    : [{ error: `Expected a letter but got ${input[0] || "EOI"}` }];
 });
