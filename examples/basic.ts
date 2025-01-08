@@ -44,7 +44,7 @@ export const twoItemsf = createParser((input) => {
 });
 
 /**
- * Parses single characters or keywords
+ * Parses a single character or a keyword
  */
 export const literal = (value: string) => {
   return createParser((input) => {
