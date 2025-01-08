@@ -7,6 +7,73 @@ type ParseResult<T> = {
   error?: string;
 };
 
+class Parse<T> {
+  parse: (input: State) => ParseResult<T>[];
+
+  constructor(parse: (input: State) => ParseResult<T>[]) {
+    this.parse = parse;
+  }
+
+  /**
+   * Transforms a parser of type T into a parser of type U
+   */
+  map<U>(transform: (value: T) => U) {
+    return createParser((input) => {
+      return this.parse(input).map((result) => ({
+        ...result,
+        value: result?.value !== undefined
+          ? transform(result.value)
+          : undefined,
+      }));
+    });
+  }
+
+  /**
+   * Applies a function parser to a lifted value
+   */
+  apply<U>(fn: Parser<(value: T) => U>): Parser<U> {
+    return createParser((input: State) => {
+      return fn(input).flatMap(({ value, remaining, error }) => {
+        if (value && remaining !== undefined) {
+          return this.parse(remaining).map((res) => {
+            if (res.value && res.remaining) {
+              return {
+                value: value(res.value),
+                remaining: res.remaining,
+              } satisfies ParseResult<U>;
+            }
+            return { error: res.error };
+          });
+        }
+        return [{ error }];
+      });
+    });
+  }
+
+  /**
+   * The default embedding of a value in the Parser context
+   */
+  pure(value: T) {
+    return createParser((remaining: State) => [{ value, remaining }]);
+  }
+
+  /**
+   * Monadic sequencing of parsers
+   */
+  bind<U>(transform: (value: T) => Parser<U>): Parser<U> {
+    return (input: State) => {
+      return this.parse(input).flatMap(({ value, remaining, error }) => {
+        if (value !== undefined && remaining !== undefined) {
+          return transform(value)(remaining);
+        } else if (error) {
+          return [{ error }];
+        }
+        return [];
+      });
+    };
+  }
+}
+
 // Helpers
 
 export const createParser = <T>(fn: Parser<T>): Parser<T> => fn;
