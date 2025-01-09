@@ -78,7 +78,7 @@ Deno.test("literal", () => {
 
   assertEquals(literal("hello").parse("hello there"), [{
     value: "hello",
-    remaining: " there",
+    remaining: "there",
   }]);
   assertEquals(literal("hello").parse("helicopter"), [{
     error: "Expected hello, but got 'helic'",
@@ -87,7 +87,7 @@ Deno.test("literal", () => {
 
 Deno.test("natural", () => {
   assertEquals(natural.parse("23 and more"), [
-    { value: 23, remaining: " and more" },
+    { value: 23, remaining: "and more" },
   ]);
   assertEquals(natural.parse("1"), [
     { value: 1, remaining: "" },
@@ -97,17 +97,17 @@ Deno.test("natural", () => {
 
 Deno.test("integer", () => {
   assertEquals(integer.parse("23 and more"), [
-    { value: 23, remaining: " and more" },
+    { value: 23, remaining: "and more" },
   ]);
   assertEquals(integer.parse("and more"), []);
   assertEquals(integer.parse("-23 and more"), [{
     value: -23,
-    remaining: " and more",
+    remaining: "and more",
   }]);
 });
 
 Deno.test("list of integers", () => {
-  assertEquals(listOfInts.parse("[1,-2,3] and more"), [
-    { value: [1, -2, 3], remaining: " and more" },
+  assertEquals(listOfInts.parse("[1 ,  -2, 3] and more"), [
+    { value: [1, -2, 3], remaining: "and more" },
   ]);
 });

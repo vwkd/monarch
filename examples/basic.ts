@@ -35,13 +35,20 @@ export const item = createParser((input) => {
  */
 export const spaces = many(filter(item, isSpace));
 
+/**
+ * Ignores trailing spaces
+ */
+export const token = <T>(parser: Parser<T>) => {
+  return parser.bind((p) => spaces.bind(() => unit(p)));
+};
+
 export const twoItems = repeat(item, 2).map((arr) => arr.join(""));
 
 /**
  * Parses a single character or a keyword
  */
 export const literal = (value: string) => {
-  return createParser((input) => {
+  return token(createParser((input) => {
     if (input.startsWith(value)) {
       return [{ value, remaining: input.slice(value.length) }];
     } else {
@@ -54,7 +61,7 @@ export const literal = (value: string) => {
         },
       ];
     }
-  });
+  }));
 };
 
 /**
@@ -82,18 +89,18 @@ export const word = many(letter).map((letters) => letters.join(""));
 /**
  * Parses a natural number
  */
-export const natural = chainl1(
+export const natural = token(chainl1(
   digit,
   unit((a: number, b: number) => 10 * a + b),
-);
+));
 
 /**
  * Parses an integer
  */
-export const integer = first(
+export const integer = token(first(
   literal("-").bind(() => natural).map((x) => -x),
   natural,
-);
+));
 
 export const listOf = <T>(p: Parser<T>) =>
   bracket(
