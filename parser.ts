@@ -71,7 +71,7 @@ export class Parser<T> {
   /**
    * Concatenates the resulting parse arrays
    */
-  plus<T>(...parsers: Parser<T>[]) {
+  plus(...parsers: Parser<T>[]) {
     return createParser((input) => {
       return [this, ...parsers].flatMap((parser) => parser.parse(input));
     });
@@ -195,6 +195,18 @@ export const many1 = <T>(parser: Parser<T>): Parser<T[]> => {
 };
 
 /**
+ * Repeats a parser a predefined number of times
+ */
+export const repeat = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
+  if (times > 0) {
+    return parser.bind((a) =>
+      repeat(parser, times - 1).bind((rest) => unit([a, ...rest]))
+    );
+  }
+  return unit([]);
+};
+
+/**
  * Recognizes non-empty sequences of a given parser and separator, and ignores the separator
  */
 export const sepBy1 = <T, U>(
@@ -221,7 +233,25 @@ export const bracket = <T, U, V>(
   body: Parser<U>,
   closeBracket: Parser<V>,
 ) => {
-  return openBracket.bind(() => body.bind((b) => closeBracket.bind(()=> unit(b))));
+  return openBracket.bind(() =>
+    body.bind((b) => closeBracket.bind(() => unit(b)))
+  );
+};
+
+/**
+ * Parses non-empty sequences of items separated by an operator parser that associates to the left and performs the fold
+ */
+export const chainl1 = <T extends (a: U, b: U) => U, U>(
+  item: Parser<U>,
+  operator: Parser<T>,
+) => {
+  const rest = (x: U): Parser<U> => {
+    return first(
+      operator.bind((f) => item.bind((y) => rest(f(x, y)))),
+      unit(x),
+    );
+  };
+  return item.bind(rest);
 };
 
 // Filtering

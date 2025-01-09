@@ -1,14 +1,15 @@
 import {
   bracket,
+  chainl1,
   createParser,
   filter,
   first,
   many,
   many1,
   type Parser,
+  repeat,
   sepBy1,
-  sequence,
-  unit,
+  unit
 } from "../parser.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
@@ -29,7 +30,7 @@ export const item = createParser((input) => {
   return [];
 });
 
-export const twoItems = sequence(item, item).map((arr) => arr.join(""));
+export const twoItems = repeat(item, 2).map((arr) => arr.join(""));
 
 /**
  * Parses a single character or a keyword
@@ -79,6 +80,8 @@ export const word = many(letter).map((letters) => letters.join(""));
 export const natural = many1(digit).bind((numbers) =>
   unit(Number(numbers.join("")))
 );
+
+export const nat = chainl1(digit, unit((a: number, b: number) => 10 * a + b));
 
 /**
  * Parses an integer

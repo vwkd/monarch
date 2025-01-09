@@ -7,11 +7,12 @@ import {
   listOfInts,
   literal,
   lower,
+  nat,
   natural,
   twoItems,
   upper,
 } from "../examples/basic.ts";
-import { any, sequence } from "../parser.ts";
+import { any, repeat } from "../parser.ts";
 
 Deno.test("item", () => {
   assertEquals(item.parse(""), []);
@@ -51,7 +52,7 @@ Deno.test("letter", () => {
   assertEquals(letter.parse("m"), [{ value: "m", remaining: "" }]);
 });
 
-const twoLower = sequence(lower, lower).map((letters) => letters.join(""));
+const twoLower = repeat(lower, 2).map((letters) => letters.join(""));
 
 Deno.test("lower", () => {
   assertEquals(lower.parse("Hello"), []);
@@ -91,6 +92,18 @@ Deno.test("natural", () => {
   ]);
 
   assertEquals(natural.parse("and more"), []);
+});
+
+Deno.test("nat", () => {
+  assertEquals(nat.parse("23 and more"), [
+    { value: 23, remaining: " and more" },
+  ]);
+
+  assertEquals(nat.parse("1"), [
+    { value: 1, remaining: "" },
+  ]);
+
+  assertEquals(nat.parse("and more"), []);
 });
 
 Deno.test("integer", () => {
