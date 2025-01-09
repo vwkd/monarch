@@ -118,16 +118,14 @@ export const orThrow = <T>(parser: Parser<T>, error: string): Parser<T> => {
  * Makes a sequence of parses and returns the array of parse results
  */
 export const sequence = <T>(...parsers: Parser<T>[]): Parser<T[]> => {
-  return createParser((input) => {
-    const results: T[] = [];
+  const results: T[] = [];
 
-    return parsers.reduce((prev, curr) => {
-      return prev.bind((x) => {
-        results.push(x);
-        return curr;
-      });
-    }).bind((x) => unit([...results, x])).parse(input);
-  });
+  return parsers.reduce((prev, curr) => {
+    return prev.bind((x) => {
+      results.push(x);
+      return curr;
+    });
+  }).bind((x) => unit([...results, x]));
 };
 
 // Alternation
@@ -172,22 +170,18 @@ export const first = <T>(
  * Returns an array of all iterated parses
  */
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
-  return createParser((input) => {
-    return parser.bind((a) => (iterate(parser).bind((x) => unit([a, ...x]))))
-      .plus(unit([])).parse(input);
-  });
+  return parser.bind((a) => (iterate(parser).bind((x) => unit([a, ...x]))))
+    .plus(unit([]));
 };
 
 /**
  * Returns the longest matching parse array (0 or more matches)
  */
 export const many = <T>(parser: Parser<T>): Parser<T[]> => {
-  return createParser((input) => {
-    return first(
-      parser.bind((a) => many(parser).bind((x) => unit([a, ...x]))),
-      unit([]),
-    ).parse(input);
-  });
+  return first(
+    parser.bind((a) => many(parser).bind((x) => unit([a, ...x]))),
+    unit([]),
+  );
 };
 
 /**
