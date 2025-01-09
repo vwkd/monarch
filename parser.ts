@@ -204,10 +204,3 @@ export const filter = <T>(
     return zero;
   });
 };
-
-// Predicates
-
-export const isLetter = (input: string) => /^[a-zA-Z]/.test(input);
-export const isDigit = (input: string) => /^\d/.test(input);
-export const isChar = (char: string) => (input: string) =>
-  input.startsWith(char);

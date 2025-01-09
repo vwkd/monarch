@@ -1,12 +1,12 @@
-import {
-  createParser,
-  filter,
-  isDigit,
-  isLetter,
-  many,
-  sequence,
-  unit,
-} from "../parser.ts";
+import { createParser, filter, many, sequence, unit } from "../parser.ts";
+
+export const regexPredicate = (regex: RegExp) => (input: string) =>
+  regex.test(input);
+
+const isLetter = regexPredicate(/^[a-zA-Z]/);
+const isLower = regexPredicate(/^[a-z]/);
+const isUpper = regexPredicate(/^[A-Z]/);
+const isDigit = regexPredicate(/^\d/);
 
 /**
  * Parses the first character
@@ -26,6 +26,16 @@ export const twoItems = sequence(item, item).map((arr) => arr.join(""));
 export const letter = filter(item, isLetter);
 
 /**
+ * Pareses a single lower case letter
+ */
+export const lower = filter(item, isLower);
+
+/**
+ * Pareses a single upper case letter
+ */
+export const upper = filter(item, isUpper);
+
+/**
  * Parses a single digit
  */
 export const digit = filter(item, isDigit).map(Number.parseInt);
@@ -43,7 +53,7 @@ export const integer = digit.bind(
 export const literal = (value: string) =>
   filter(item, (input) => input.startsWith(value));
 
-export const assertLiteral = (value: string) => {
+const assertLiteral = (value: string) => {
   return createParser((input) => {
     if (input.startsWith(value)) {
       return [{ value: value, remaining: input.slice(value.length) }];
@@ -66,7 +76,7 @@ const assertDigit = createParser((input) => {
     : [{ error: `Expected a digit but got ${input[0] || "EOI"}` }];
 });
 
-export const assertletter = createParser((input) => {
+const assertletter = createParser((input) => {
   return /^[a-zA-Z]/.test(input)
     ? [{ value: input[0], remaining: input.slice(1) }]
     : [{ error: `Expected a letter but got ${input[0] || "EOI"}` }];
