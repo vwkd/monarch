@@ -1,6 +1,7 @@
 import {
   createParser,
   filter,
+  first,
   many,
   many1,
   sequence,
@@ -28,6 +29,26 @@ export const item = createParser((input) => {
 export const twoItems = sequence(item, item).map((arr) => arr.join(""));
 
 /**
+ * Parses a single character or a keyword
+ */
+export const literal = (value: string) => {
+  return createParser((input) => {
+    if (input.startsWith(value)) {
+      return [{ value: value, remaining: input.slice(value.length) }];
+    } else {
+      return [
+        {
+          error:
+            (`Expected ${value}, but got '${
+              input.slice(0, value.length) || "EOI"
+            }'`),
+        },
+      ];
+    }
+  });
+};
+
+/**
  * Parses a single letter (case insensitive)
  */
 export const letter = filter(item, isLetter);
@@ -52,29 +73,17 @@ export const word = many(letter);
 /**
  * Parses a natural number
  */
-export const nat = many1(digit).bind((numbers) =>
+export const natural = many1(digit).bind((numbers) =>
   unit(Number(numbers.join("")))
 );
 
 /**
- * Parses a single character or a keyword
+ * Parses an integer
  */
-export const literal = (value: string) => {
-  return createParser((input) => {
-    if (input.startsWith(value)) {
-      return [{ value: value, remaining: input.slice(value.length) }];
-    } else {
-      return [
-        {
-          error:
-            (`Expected ${value}, but got '${
-              input.slice(0, value.length) || "EOI"
-            }'`),
-        },
-      ];
-    }
-  });
-};
+export const integer = first(
+  literal("-").bind(() => natural).map((x) => -x),
+  natural,
+);
 
 const assertDigit = createParser((input) => {
   return /^\d/.test(input)

@@ -6,8 +6,9 @@ import {
   letter,
   literal,
   lower,
+  natural,
   twoItems,
-  upper,
+  upper
 } from "../examples/basic.ts";
 import { any, sequence } from "../parser.ts";
 
@@ -68,17 +69,36 @@ Deno.test("digit", () => {
 });
 
 Deno.test("literal", () => {
-  assertEquals(literal("m").parse("a"), []);
+  assertEquals(literal("m").parse("a"), [{ error: "Expected m, but got 'a'" }]);
   assertEquals(literal("m").parse("monad"), [{
     value: "m",
     remaining: "onad",
   }]);
+
+  assertEquals(literal("hello").parse("hello there"), [{
+    value: "hello",
+    remaining: " there",
+  }]);
+  assertEquals(literal("hello").parse("helicopter"), [{
+    error: "Expected hello, but got 'helic'",
+  }]);
 });
 
-Deno.test("number", () => {
-  assertEquals(integer.parse("23 and more"), [
+Deno.test("natural", () => {
+  assertEquals(natural.parse("23 and more"), [
     { value: 23, remaining: " and more" },
   ]);
 
+  assertEquals(natural.parse("and more"), []);
+});
+
+Deno.test("integer", () => {
+  assertEquals(integer.parse("23 and more"), [
+    { value: 23, remaining: " and more" },
+  ]);
   assertEquals(integer.parse("and more"), []);
+  assertEquals(integer.parse("-23 and more"), [{
+    value: -23,
+    remaining: " and more",
+  }]);
 });
