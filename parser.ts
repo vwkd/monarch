@@ -159,8 +159,8 @@ export const first = <T>(
   return createParser((input) => {
     for (const parser of parsers) {
       const results = parser.parse(input);
-      if (results.find((result) => result.value !== undefined)) {
-        return results;
+      if (results.find((res) => res.value !== undefined)) {
+        return results.filter((res) => res.value !== undefined);
       }
     }
     return [];
