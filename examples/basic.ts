@@ -8,7 +8,7 @@ import {
   type Parser,
   repeat,
   sepBy1,
-  unit,
+  result,
 } from "../parser.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
@@ -39,7 +39,7 @@ export const spaces = many(filter(item, isSpace));
  * Ignores trailing spaces
  */
 export const token = <T>(parser: Parser<T>) => {
-  return parser.bind((p) => spaces.bind(() => unit(p)));
+  return parser.bind((p) => spaces.bind(() => result(p)));
 };
 
 export const twoItems = repeat(item, 2).map((arr) => arr.join(""));
@@ -91,7 +91,7 @@ export const word = many(letter).map((letters) => letters.join(""));
  */
 export const natural = token(chainl1(
   digit,
-  unit((a: number, b: number) => 10 * a + b),
+  result((a: number, b: number) => 10 * a + b),
 ));
 
 /**

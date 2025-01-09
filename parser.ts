@@ -89,7 +89,7 @@ export const createParser = <T>(
  *
  * Succeeds without consuming any of the input string
  */
-export const unit = <T>(value: T): Parser<T> => {
+export const result = <T>(value: T): Parser<T> => {
   return createParser((remaining: State) => [{ value, remaining }]);
 };
 
@@ -128,7 +128,7 @@ export const sequence = <T>(...parsers: Parser<T>[]): Parser<T[]> => {
       results.push(x);
       return curr;
     });
-  }).bind((x) => unit([...results, x]));
+  }).bind((x) => result([...results, x]));
 };
 
 // Alternation
@@ -173,8 +173,8 @@ export const first = <T>(
  * Returns an array of all iterated parses
  */
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
-  return parser.bind((a) => (iterate(parser).bind((x) => unit([a, ...x]))))
-    .plus(unit([]));
+  return parser.bind((a) => (iterate(parser).bind((x) => result([a, ...x]))))
+    .plus(result([]));
 };
 
 /**
@@ -182,8 +182,8 @@ export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
  */
 export const many = <T>(parser: Parser<T>): Parser<T[]> => {
   return first(
-    parser.bind((a) => many(parser).bind((x) => unit([a, ...x]))),
-    unit([]),
+    parser.bind((a) => many(parser).bind((x) => result([a, ...x]))),
+    result([]),
   );
 };
 
@@ -191,7 +191,7 @@ export const many = <T>(parser: Parser<T>): Parser<T[]> => {
  * Returns the longest matching parse array (1 or more matches)
  */
 export const many1 = <T>(parser: Parser<T>): Parser<T[]> => {
-  return parser.bind((x) => many(parser).bind((rest) => unit([x, ...rest])));
+  return parser.bind((x) => many(parser).bind((rest) => result([x, ...rest])));
 };
 
 /**
@@ -200,10 +200,10 @@ export const many1 = <T>(parser: Parser<T>): Parser<T[]> => {
 export const repeat = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
   if (times > 0) {
     return parser.bind((a) =>
-      repeat(parser, times - 1).bind((rest) => unit([a, ...rest]))
+      repeat(parser, times - 1).bind((rest) => result([a, ...rest]))
     );
   }
-  return unit([]);
+  return result([]);
 };
 
 /**
@@ -214,7 +214,7 @@ export const sepBy1 = <T, U>(
   sep: Parser<U>,
 ): Parser<T[]> => {
   return parser.bind((x) =>
-    many(sep.bind(() => parser)).bind((rest) => unit([x, ...rest]))
+    many(sep.bind(() => parser)).bind((rest) => result([x, ...rest]))
   );
 };
 
@@ -225,7 +225,7 @@ export const sepBy = <T, U>(
   parser: Parser<T>,
   sep: Parser<U>,
 ): Parser<T[]> => {
-  return sepBy1(parser, sep).plus(unit([]));
+  return sepBy1(parser, sep).plus(result([]));
 };
 
 export const bracket = <T, U, V>(
@@ -234,7 +234,7 @@ export const bracket = <T, U, V>(
   closeBracket: Parser<V>,
 ) => {
   return openBracket.bind(() =>
-    body.bind((b) => closeBracket.bind(() => unit(b)))
+    body.bind((b) => closeBracket.bind(() => result(b)))
   );
 };
 
@@ -248,7 +248,7 @@ export const chainl1 = <T, U extends (a: T, b: T) => T>(
   const rest = (x: T): Parser<T> => {
     return first(
       operator.bind((f) => item.bind((y) => rest(f(x, y)))),
-      unit(x),
+      result(x),
     );
   };
   return item.bind(rest);
@@ -270,8 +270,8 @@ export const chainr1 = <T, U extends (a: T, b: T) => T>(
 ): Parser<T> => {
   return item.bind((x) => {
     return first(
-      operator.bind((f) => chainr1(item, operator).bind((y) => unit(f(x, y)))),
-      unit(x),
+      operator.bind((f) => chainr1(item, operator).bind((y) => result(f(x, y)))),
+      result(x),
     );
   });
 };
@@ -297,7 +297,7 @@ export const filter = <T>(
 ): Parser<T> => {
   return parser.bind((value) => {
     if (predicate(value)) {
-      return unit(value);
+      return result(value);
     } else if (error) {
       return createParser(() => [{ error }]);
     }
