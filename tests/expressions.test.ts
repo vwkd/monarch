@@ -11,4 +11,9 @@ Deno.test("expression", () => {
     value: 10,
     remaining: "",
   }]);
+
+  assertEquals(expr.parse("(1+2)^3+1"), [{
+    value: 28,
+    remaining: "",
+  }]);
 });

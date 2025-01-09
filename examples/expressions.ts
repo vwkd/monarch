@@ -17,9 +17,7 @@ const additiveOp = first(
   literal("-").map(() => (a: number, b: number) => a - b),
 );
 
-const expOp = first(
-  literal("^").map(() => (a: number, b: number) => a ** b),
-);
+const expOp = literal("^").map(() => (a: number, b: number) => a ** b);
 
 // natural | (expr)
 const factor: Parser<number> = lazy(() =>
