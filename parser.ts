@@ -173,7 +173,7 @@ export const first = <T>(
  * Returns an array of all iterated parses
  */
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
-  return parser.bind((a) => (iterate(parser).bind((x) => result([a, ...x]))))
+  return parser.bind((a) => iterate(parser).bind((x) => result([a, ...x])))
     .plus(result([]));
 };
 
@@ -225,7 +225,7 @@ export const sepBy = <T, U>(
   parser: Parser<T>,
   sep: Parser<U>,
 ): Parser<T[]> => {
-  return sepBy1(parser, sep).plus(result([]));
+  return first(sepBy1(parser, sep), result([]));
 };
 
 export const bracket = <T, U, V>(
@@ -270,7 +270,9 @@ export const chainr1 = <T, U extends (a: T, b: T) => T>(
 ): Parser<T> => {
   return item.bind((x) => {
     return first(
-      operator.bind((f) => chainr1(item, operator).bind((y) => result(f(x, y)))),
+      operator.bind((f) =>
+        chainr1(item, operator).bind((y) => result(f(x, y)))
+      ),
       result(x),
     );
   });
