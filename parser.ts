@@ -309,8 +309,6 @@ export const filter = <T>(
 
 /**
  * Takes a parser thunk and memoize it upon evaluation.
- *
- * This helps with undeclared variable references in recursive grammars
  */
 export const memoize = <T>(parserThunk: () => Parser<T>): Parser<T> => {
   let parser: Parser<T>;
@@ -325,6 +323,8 @@ export const memoize = <T>(parserThunk: () => Parser<T>): Parser<T> => {
 
 /**
  * Defers evaluation, without memoization
+ *
+ * This helps with undeclared variable references in recursive grammars
  */
 export const lazy = <T>(parserThunk: () => Parser<T>): Parser<T> => {
   return createParser((input) => {
