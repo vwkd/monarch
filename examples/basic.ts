@@ -2,8 +2,10 @@ import {
   createParser,
   filter,
   isDigit,
-  isLetter, many, sequence,
-  unit
+  isLetter,
+  many,
+  sequence,
+  unit,
 } from "../parser.ts";
 
 /**
@@ -16,8 +18,7 @@ export const item = createParser((input) => {
   return [];
 });
 
-export const twoItems = sequence(item, item);
-export const twoItemsf = item.bind((a) => item.bind((b) => unit(a + b)));
+export const twoItems = sequence(item, item).map((arr) => arr.join(""));
 
 /**
  * Parses a single letter (case insensitive)

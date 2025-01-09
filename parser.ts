@@ -106,12 +106,19 @@ export const orThrow = <T>(parser: Parser<T>, error: string): Parser<T> => {
 // Sequencing
 
 /**
- * Makes a sequence of parses
+ * Makes a sequence of parses and returns the array of parse results
  */
-export const sequence = <T>(...parsers: Parser<T>[]) => {
-  return createParser((input) =>
-    parsers.reduce((prev, curr) => prev.bind(() => curr)).parse(input)
-  );
+export const sequence = <T>(...parsers: Parser<T>[]): Parser<T[]> => {
+  return createParser((input) => {
+    const results: T[] = [];
+
+    return parsers.reduce((prev, curr) => {
+      return prev.bind((x) => {
+        results.push(x);
+        return curr;
+      });
+    }).bind((x) => unit([...results, x])).parse(input);
+  });
 };
 
 // Alternation

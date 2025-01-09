@@ -5,8 +5,7 @@ import {
   item,
   letter,
   literal,
-  twoItems,
-  twoItemsf,
+  twoItems
 } from "../examples/basic.ts";
 import { any } from "../parser.ts";
 
@@ -20,13 +19,13 @@ Deno.test("item", () => {
 
 Deno.test("two items", () => {
   assertEquals(twoItems.parse("m"), []);
-  assertEquals(twoItemsf.parse("monad"), [{
+  assertEquals(twoItems.parse("monad"), [{
     value: "mo",
     remaining: "nad",
   }]);
 });
 
-const oneOrTwoItems = any(item, twoItemsf);
+const oneOrTwoItems = any(item, twoItems);
 
 Deno.test("alternation", () => {
   assertEquals(oneOrTwoItems.parse(""), []);
