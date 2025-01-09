@@ -8,7 +8,7 @@ import {
   type Parser,
   repeat,
   sepBy1,
-  unit
+  unit,
 } from "../parser.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
@@ -18,6 +18,7 @@ const isLetter = regexPredicate(/^[a-zA-Z]/);
 const isLower = regexPredicate(/^[a-z]/);
 const isUpper = regexPredicate(/^[A-Z]/);
 const isDigit = regexPredicate(/^\d/);
+const isSpace = regexPredicate(/^\s/);
 
 /**
  * Parses the first character
@@ -29,6 +30,11 @@ export const item = createParser((input) => {
   return [];
 });
 
+/**
+ * Parses spaces
+ */
+export const spaces = many(filter(item, isSpace));
+
 export const twoItems = repeat(item, 2).map((arr) => arr.join(""));
 
 /**
@@ -37,7 +43,7 @@ export const twoItems = repeat(item, 2).map((arr) => arr.join(""));
 export const literal = (value: string) => {
   return createParser((input) => {
     if (input.startsWith(value)) {
-      return [{ value: value, remaining: input.slice(value.length) }];
+      return [{ value, remaining: input.slice(value.length) }];
     } else {
       return [
         {
@@ -76,7 +82,10 @@ export const word = many(letter).map((letters) => letters.join(""));
 /**
  * Parses a natural number
  */
-export const natural = chainl1(digit, unit((a: number, b: number) => 10 * a + b));
+export const natural = chainl1(
+  digit,
+  unit((a: number, b: number) => 10 * a + b),
+);
 
 /**
  * Parses an integer
