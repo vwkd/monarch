@@ -5,9 +5,11 @@ import {
   item,
   letter,
   literal,
-  twoItems
+  lower,
+  twoItems,
+  upper,
 } from "../examples/basic.ts";
-import { any } from "../parser.ts";
+import { any, sequence } from "../parser.ts";
 
 Deno.test("item", () => {
   assertEquals(item.parse(""), []);
@@ -45,6 +47,18 @@ Deno.test("alternation", () => {
 Deno.test("letter", () => {
   assertEquals(letter.parse("m"), [{ value: "m", remaining: "" }]);
   assertEquals(letter.parse("m"), [{ value: "m", remaining: "" }]);
+});
+
+const twoLower = sequence(lower, lower).map((letters) => letters.join(""));
+
+Deno.test("lower", () => {
+  assertEquals(lower.parse("Hello"), []);
+  assertEquals(twoLower.parse("abcd"), [{ value: "ab", remaining: "cd" }]);
+  assertEquals(twoLower.parse("aBcd"), []);
+});
+
+Deno.test("upper", () => {
+  assertEquals(upper.parse("Hello"), [{ value: "H", remaining: "ello" }]);
 });
 
 Deno.test("digit", () => {
