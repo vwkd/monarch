@@ -1,11 +1,9 @@
-import { many } from "../parser.ts";
 import {
   createParser,
   filter,
   isDigit,
-  isLetter,
-  sequence,
-  unit,
+  isLetter, many, sequence,
+  unit
 } from "../parser.ts";
 
 /**
@@ -17,6 +15,9 @@ export const item = createParser((input) => {
   }
   return [];
 });
+
+export const twoItems = sequence(item, item);
+export const twoItemsf = item.bind((a) => item.bind((b) => unit(a + b)));
 
 /**
  * Parses a single letter (case insensitive)
@@ -35,13 +36,13 @@ export const integer = digit.bind(
   (a) => many(digit).bind((rest) => unit(Number([a, ...rest].join("")))),
 );
 
-export const twoItems = sequence(item, item);
-export const twoItemsf = item.bind((a) => item.bind((b) => unit(a + b)));
-
 /**
  * Parses a single character or a keyword
  */
-export const literal = (value: string) => {
+export const literal = (value: string) =>
+  filter(item, (input) => input.startsWith(value));
+
+export const assertLiteral = (value: string) => {
   return createParser((input) => {
     if (input.startsWith(value)) {
       return [{ value: value, remaining: input.slice(value.length) }];
