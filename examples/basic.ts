@@ -1,4 +1,11 @@
-import { createParser, filter, many, sequence, unit } from "../parser.ts";
+import {
+  createParser,
+  filter,
+  many,
+  many1,
+  sequence,
+  unit,
+} from "../parser.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
   regex.test(input);
@@ -40,20 +47,19 @@ export const upper = filter(item, isUpper);
  */
 export const digit = filter(item, isDigit).map(Number.parseInt);
 
+export const word = many(letter);
+
 /**
- * Parses an integer
+ * Parses a natural number
  */
-export const integer = digit.bind(
-  (a) => many(digit).bind((rest) => unit(Number([a, ...rest].join("")))),
+export const nat = many1(digit).bind((numbers) =>
+  unit(Number(numbers.join("")))
 );
 
 /**
  * Parses a single character or a keyword
  */
-export const literal = (value: string) =>
-  filter(item, (input) => input.startsWith(value));
-
-const assertLiteral = (value: string) => {
+export const literal = (value: string) => {
   return createParser((input) => {
     if (input.startsWith(value)) {
       return [{ value: value, remaining: input.slice(value.length) }];

@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { digit, item, twoItems } from "../examples/basic.ts";
+import { digit, item, letter, twoItems } from "../examples/basic.ts";
 import { any, iterate, many, zero } from "../parser.ts";
 
 Deno.test("zero is an absorbing element of flatMap", () => {
@@ -12,6 +12,13 @@ Deno.test("iterate", () => {
     { value: [2, 3], remaining: " and more" },
     { value: [2], remaining: "3 and more" },
     { value: [], remaining: "23 and more" },
+  ]);
+
+  assertEquals(iterate(letter).parse("Yes!"), [
+    { value: ["Y", "e", "s"], remaining: "!" },
+    { value: ["Y", "e"], remaining: "s!" },
+    { value: ["Y"], remaining: "es!" },
+    { value: [], remaining: "Yes!" },
   ]);
 });
 

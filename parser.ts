@@ -64,6 +64,15 @@ class Parser<T> {
       });
     });
   }
+
+  /**
+   * Concatenates the resulting parse arrays
+   */
+  plus<T>(...parsers: Parser<T>[]) {
+    return createParser((input) => {
+      return [this, ...parsers].flatMap((parser) => parser.parse(input));
+    });
+  }
 }
 
 // Helpers
@@ -82,9 +91,9 @@ export const unit = <T>(value: T): Parser<T> => {
 };
 
 /**
- * Zero is the unit of alternation, and always fails
+ * The always failing parser
  *
- * It also is an absorbing element of flatMap
+ * It is the unit of alternation and plus, and also is an absorbing element of flatMap
  */
 export const zero = createParser<any>((_: State) => []);
 
@@ -164,17 +173,13 @@ export const first = <T>(
  */
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
   return createParser((input) => {
-    return any(
-      parser.bind(
-        (a) => (iterate(parser).bind((x) => unit([a, ...x]))),
-      ),
-      unit([]),
-    ).parse(input);
+    return parser.bind((a) => (iterate(parser).bind((x) => unit([a, ...x]))))
+      .plus(unit([])).parse(input);
   });
 };
 
 /**
- * Return the longest matching parse array (0 or more)
+ * Returns the longest matching parse array (0 or more matches)
  */
 export const many = <T>(parser: Parser<T>): Parser<T[]> => {
   return createParser((input) => {
@@ -183,6 +188,13 @@ export const many = <T>(parser: Parser<T>): Parser<T[]> => {
       unit([]),
     ).parse(input);
   });
+};
+
+/**
+ * Returns the longest matching parse array (1 or more matches)
+ */
+export const many1 = <T>(parser: Parser<T>) => {
+  return parser.bind((x) => many(parser).bind((rest) => unit([x, ...rest])));
 };
 
 // Filtering
