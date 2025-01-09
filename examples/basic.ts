@@ -5,7 +5,6 @@ import {
   filter,
   first,
   many,
-  many1,
   type Parser,
   repeat,
   sepBy1,
@@ -77,11 +76,7 @@ export const word = many(letter).map((letters) => letters.join(""));
 /**
  * Parses a natural number
  */
-export const natural = many1(digit).bind((numbers) =>
-  unit(Number(numbers.join("")))
-);
-
-export const nat = chainl1(digit, unit((a: number, b: number) => 10 * a + b));
+export const natural = chainl1(digit, unit((a: number, b: number) => 10 * a + b));
 
 /**
  * Parses an integer

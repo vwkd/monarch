@@ -7,7 +7,6 @@ import {
   listOfInts,
   literal,
   lower,
-  nat,
   natural,
   twoItems,
   upper,
@@ -90,20 +89,10 @@ Deno.test("natural", () => {
   assertEquals(natural.parse("23 and more"), [
     { value: 23, remaining: " and more" },
   ]);
-
-  assertEquals(natural.parse("and more"), []);
-});
-
-Deno.test("nat", () => {
-  assertEquals(nat.parse("23 and more"), [
-    { value: 23, remaining: " and more" },
-  ]);
-
-  assertEquals(nat.parse("1"), [
+  assertEquals(natural.parse("1"), [
     { value: 1, remaining: "" },
   ]);
-
-  assertEquals(nat.parse("and more"), []);
+  assertEquals(natural.parse("and more"), []);
 });
 
 Deno.test("integer", () => {
