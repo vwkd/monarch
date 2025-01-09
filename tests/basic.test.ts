@@ -4,11 +4,12 @@ import {
   integer,
   item,
   letter,
+  listOfInts,
   literal,
   lower,
   natural,
   twoItems,
-  upper
+  upper,
 } from "../examples/basic.ts";
 import { any, sequence } from "../parser.ts";
 
@@ -101,4 +102,10 @@ Deno.test("integer", () => {
     value: -23,
     remaining: " and more",
   }]);
+});
+
+Deno.test("list of integers", () => {
+  assertEquals(listOfInts.parse("[1,-2,3] and more"), [
+    { value: [1, -2, 3], remaining: " and more" },
+  ]);
 });

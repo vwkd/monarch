@@ -1,9 +1,12 @@
 import {
+  bracket,
   createParser,
   filter,
   first,
   many,
   many1,
+  type Parser,
+  sepBy1,
   sequence,
   unit,
 } from "../parser.ts";
@@ -68,7 +71,7 @@ export const upper = filter(item, isUpper);
  */
 export const digit = filter(item, isDigit).map(Number.parseInt);
 
-export const word = many(letter);
+export const word = many(letter).map((letters) => letters.join(""));
 
 /**
  * Parses a natural number
@@ -84,6 +87,15 @@ export const integer = first(
   literal("-").bind(() => natural).map((x) => -x),
   natural,
 );
+
+export const listOf = <T>(p: Parser<T>) =>
+  bracket(
+    literal("["),
+    sepBy1(p, literal(",")),
+    literal("]"),
+  );
+
+export const listOfInts = listOf(integer);
 
 const assertDigit = createParser((input) => {
   return /^\d/.test(input)
