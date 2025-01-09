@@ -8,7 +8,7 @@ import {
   chainr1,
   first,
   lazy,
-  type Parser,
+  type Parser
 } from "../parser.ts";
 import { literal, natural } from "./basic.ts";
 
