@@ -6,7 +6,10 @@ type ParseResult<T> = {
   error?: string;
 };
 
-class Parser<T> {
+/**
+ * The monadic parser class
+ */
+export class Parser<T> {
   parse: (input: State) => ParseResult<T>[];
 
   constructor(parse: (input: State) => ParseResult<T>[]) {
@@ -187,13 +190,45 @@ export const many = <T>(parser: Parser<T>): Parser<T[]> => {
 /**
  * Returns the longest matching parse array (1 or more matches)
  */
-export const many1 = <T>(parser: Parser<T>) => {
+export const many1 = <T>(parser: Parser<T>): Parser<T[]> => {
   return parser.bind((x) => many(parser).bind((rest) => unit([x, ...rest])));
+};
+
+/**
+ * Recognizes non-empty sequences of a given parser and separator, and ignores the separator
+ */
+export const sepBy1 = <T, U>(
+  parser: Parser<T>,
+  sep: Parser<U>,
+): Parser<T[]> => {
+  return parser.bind((x) =>
+    many(sep.bind(() => parser)).bind((rest) => unit([x, ...rest]))
+  );
+};
+
+/**
+ * Recognizes sequences (maybe empty) of a given parser and separator, and ignores the separator
+ */
+export const sepBy = <T, U>(
+  parser: Parser<T>,
+  sep: Parser<U>,
+): Parser<T[]> => {
+  return sepBy1(parser, sep).plus(unit([]));
+};
+
+export const bracket = <T, U, V>(
+  openBracket: Parser<T>,
+  body: Parser<U>,
+  closeBracket: Parser<V>,
+) => {
+  return openBracket.bind(() => body.bind((b) => closeBracket.bind(()=> unit(b))));
 };
 
 // Filtering
 
 /**
+ * Filters a parser by a predicate and matches only if the predicate returns true
+ *
  * Preserves `zero` and distributes over alternation
  */
 export const filter = <T>(
