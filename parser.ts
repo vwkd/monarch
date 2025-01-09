@@ -241,17 +241,46 @@ export const bracket = <T, U, V>(
 /**
  * Parses non-empty sequences of items separated by an operator parser that associates to the left and performs the fold
  */
-export const chainl1 = <T extends (a: U, b: U) => U, U>(
-  item: Parser<U>,
-  operator: Parser<T>,
-) => {
-  const rest = (x: U): Parser<U> => {
+export const chainl1 = <T, U extends (a: T, b: T) => T>(
+  item: Parser<T>,
+  operator: Parser<U>,
+): Parser<T> => {
+  const rest = (x: T): Parser<T> => {
     return first(
       operator.bind((f) => item.bind((y) => rest(f(x, y)))),
       unit(x),
     );
   };
   return item.bind(rest);
+};
+
+export const chainl = <T, U extends (a: T, b: T) => T>(
+  item: Parser<T>,
+  operator: Parser<U>,
+): Parser<T> => {
+  return first(chainl1(item, operator), item);
+};
+
+/**
+ * Parses non-empty sequences of items separated by an operator parser that associates to the right and performs the fold
+ */
+export const chainr1 = <T, U extends (a: T, b: T) => T>(
+  item: Parser<T>,
+  operator: Parser<U>,
+): Parser<T> => {
+  return item.bind((x) => {
+    return first(
+      operator.bind((f) => chainr1(item, operator).bind((y) => unit(f(x, y)))),
+      unit(x),
+    );
+  });
+};
+
+export const chainr = <T, U extends (a: T, b: T) => T>(
+  item: Parser<T>,
+  operator: Parser<U>,
+): Parser<T> => {
+  return first(chainr1(item, operator), item);
 };
 
 // Filtering
@@ -273,5 +302,21 @@ export const filter = <T>(
       return createParser(() => [{ error }]);
     }
     return zero;
+  });
+};
+
+// Lazy Evaluation
+
+/**
+ * The lazy parser takes a parser thunk and evaluates it later, helping to avoid using undeclared variable in recursive grammars
+ */
+export const lazy = <T>(parserThunk: () => Parser<T>): Parser<T> => {
+  let parser: Parser<T>;
+
+  return createParser((input) => {
+    if (!parser) {
+      parser = parserThunk();
+    }
+    return parser.parse(input);
   });
 };
