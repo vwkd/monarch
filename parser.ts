@@ -16,7 +16,7 @@ class Parser<T> {
   /**
    * Transforms a parser of type T into a parser of type U
    */
-  map<U>(transform: (value: T) => U) {
+  map<U>(transform: (value: T) => U): Parser<U> {
     return createParser((input) => {
       return this.parse(input).map((result) => ({
         ...result,
@@ -30,7 +30,7 @@ class Parser<T> {
   /**
    * Applies a function parser to a lifted value
    */
-  apply<U>(fn: Parser<(value: T) => U>) {
+  apply<U>(fn: Parser<(value: T) => U>): Parser<U> {
     return createParser((input: State) => {
       return fn.parse(input).flatMap(({ value, remaining, error }) => {
         if (value && remaining !== undefined) {
@@ -50,16 +50,9 @@ class Parser<T> {
   }
 
   /**
-   * The default embedding of a value in the Parser context
-   */
-  pure(value: T) {
-    return createParser((remaining: State) => [{ value, remaining }]);
-  }
-
-  /**
    * Monadic sequencing of parsers
    */
-  bind<U>(transform: (value: T) => Parser<U>) {
+  bind<U>(transform: (value: T) => Parser<U>): Parser<U> {
     return createParser((input: State) => {
       return this.parse(input).flatMap(({ value, remaining, error }) => {
         if (value !== undefined && remaining !== undefined) {
@@ -80,17 +73,33 @@ export const createParser = <T>(
 ): Parser<T> => new Parser(fn);
 
 /**
- * The empty parser
+ * The default embedding of a value in the Parser context
+ *
+ * Succeeds without consuming any of the input string
  */
 export const unit = <T>(value: T): Parser<T> => {
   return createParser((remaining: State) => [{ value, remaining }]);
 };
 
 /**
- * Zero is the unit of alternation
+ * Zero is the unit of alternation, and always fails
+ *
  * It also is an absorbing element of flatMap
  */
-export const zero = (_: State) => [];
+export const zero = createParser<any>((_: State) => []);
+
+/**
+ * Decorator that makes a parser return an error message if it fails
+ */
+export const orThrow = <T>(parser: Parser<T>, error: string): Parser<T> => {
+  return createParser((input) => {
+    const results = parser.parse(input);
+    if (results.filter((result) => result.value !== undefined).length > 0) {
+      return results;
+    }
+    return [{ error }];
+  });
+};
 
 // Combinators
 
@@ -185,7 +194,7 @@ export const filter = <T>(
     } else if (error) {
       return createParser(() => [{ error }]);
     }
-    return createParser(zero);
+    return zero;
   });
 };
 
