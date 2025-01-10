@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert/equals";
-import { expr } from "../examples/expressions.ts";
+import { expr } from "../examples/arithmetic-expressions.ts";
 
 Deno.test("expression", () => {
   assertEquals(expr.parse("1+2"), [{
