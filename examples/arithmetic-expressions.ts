@@ -10,19 +10,22 @@ import {
   memoize,
   type Parser,
 } from "../parser.ts";
-import { literal, natural } from "./basic.ts";
+import { integer, literal } from "./basic.ts";
 
-const additiveOp = first(
+const addOp = first(
   literal("+").map(() => (a: number, b: number) => a + b),
   literal("-").map(() => (a: number, b: number) => a - b),
 );
-
+const mulOp = first(
+  literal("*").map(() => (a: number, b: number) => a * b),
+  literal("/").map(() => (a: number, b: number) => a / b),
+);
 const expOp = literal("^").map(() => (a: number, b: number) => a ** b);
 
-// natural | (expr)
-const factor: Parser<number> = memoize(() =>
+// integer | (expr)
+const atom: Parser<number> = memoize(() =>
   first(
-    natural,
+    integer,
     bracket(
       literal("("),
       arithmetic,
@@ -31,5 +34,6 @@ const factor: Parser<number> = memoize(() =>
   )
 );
 
-const term = chainr1(factor, expOp);
-export const arithmetic = chainl1(term, additiveOp);
+const factor = chainr1(atom, expOp);
+const term = chainl1(factor, mulOp);
+export const arithmetic = chainl1(term, addOp);
