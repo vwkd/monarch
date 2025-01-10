@@ -7,13 +7,14 @@ import {
   many,
   type Parser,
   repeat,
-  sepBy1,
   result,
+  sepBy1,
 } from "../parser.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
   regex.test(input);
 
+const isAlphaNum = regexPredicate(/^\w/);
 const isLetter = regexPredicate(/^[a-zA-Z]/);
 const isLower = regexPredicate(/^[a-z]/);
 const isUpper = regexPredicate(/^[A-Z]/);
@@ -36,7 +37,7 @@ export const item = createParser((input) => {
 export const spaces = many(filter(item, isSpace));
 
 /**
- * Ignores trailing spaces
+ * Discards trailing spaces
  */
 export const token = <T>(parser: Parser<T>) => {
   return parser.bind((p) => spaces.bind(() => result(p)));
@@ -79,12 +80,18 @@ export const lower = filter(item, isLower);
  */
 export const upper = filter(item, isUpper);
 
+export const word = many(letter).map((letters) => letters.join(""));
+
+export const alphaNum = many(filter(item, isAlphaNum)).map((letters) =>
+  letters.join("")
+);
+
+export const identifier = token(letter.bind((l) => alphaNum.map((rest) => l + rest)));
+
 /**
  * Parses a single digit
  */
 export const digit = filter(item, isDigit).map(Number.parseInt);
-
-export const word = many(letter).map((letters) => letters.join(""));
 
 /**
  * Parses a natural number
