@@ -80,6 +80,9 @@ export const lower = filter(item, isLower);
  */
 export const upper = filter(item, isUpper);
 
+/**
+ * Parser a string of letters
+ */
 export const word = many(letter).map((letters) => letters.join(""));
 
 export const alphaNum = many(filter(item, isAlphaNum)).map((letters) =>
