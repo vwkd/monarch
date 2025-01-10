@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
-import { digit, item, letter, twoItems } from "../examples/basic.ts";
+import { digit, take, letter, takeTwo } from "../examples/basic.ts";
 import { any, iterate, many, zero } from "../parser.ts";
 
 Deno.test("zero is an absorbing element of flatMap", () => {
-  assertEquals(zero.bind(() => item).parse("m"), zero.parse("m"));
-  assertEquals(item.bind(() => zero).parse("m"), zero.parse("m"));
+  assertEquals(zero.bind(() => take).parse("m"), zero.parse("m"));
+  assertEquals(take.bind(() => zero).parse("m"), zero.parse("m"));
 });
 
 Deno.test("iterate", () => {
@@ -34,7 +34,7 @@ Deno.test("many", () => {
 });
 
 // Explore a search space
-const oneOrTwoItems = any(item, twoItems);
+const oneOrTwoItems = any(take, takeTwo);
 const explore = many(oneOrTwoItems);
 
 Deno.test("explore", () => {

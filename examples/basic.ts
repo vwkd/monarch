@@ -22,9 +22,9 @@ const isDigit = regexPredicate(/^\d/);
 const isSpace = regexPredicate(/^\s/);
 
 /**
- * Parses the first character
+ * Parses the next character
  */
-export const item = createParser((input) => {
+export const take = createParser((input) => {
   if (input.length > 0) {
     return [{ value: input[0], remaining: input.slice(1) }];
   }
@@ -32,9 +32,14 @@ export const item = createParser((input) => {
 });
 
 /**
+ * Parses the next two characters
+ */
+export const takeTwo = repeat(take, 2).map((arr) => arr.join(""));
+
+/**
  * Parses spaces
  */
-export const spaces = many(filter(item, isSpace));
+export const spaces = many(filter(take, isSpace));
 
 /**
  * Discards trailing spaces
@@ -42,8 +47,6 @@ export const spaces = many(filter(item, isSpace));
 export const token = <T>(parser: Parser<T>) => {
   return parser.bind((p) => spaces.bind(() => result(p)));
 };
-
-export const twoItems = repeat(item, 2).map((arr) => arr.join(""));
 
 /**
  * Parses a single character or a keyword
@@ -68,33 +71,35 @@ export const literal = (value: string) => {
 /**
  * Parses a single letter (case insensitive)
  */
-export const letter = filter(item, isLetter);
+export const letter = filter(take, isLetter);
 
 /**
  * Pareses a single lower case letter
  */
-export const lower = filter(item, isLower);
+export const lower = filter(take, isLower);
 
 /**
  * Pareses a single upper case letter
  */
-export const upper = filter(item, isUpper);
+export const upper = filter(take, isUpper);
 
 /**
  * Parser a string of letters
  */
 export const word = many(letter).map((letters) => letters.join(""));
 
-export const alphaNum = many(filter(item, isAlphaNum)).map((letters) =>
+export const alphaNum = many(filter(take, isAlphaNum)).map((letters) =>
   letters.join("")
 );
 
-export const identifier = token(letter.bind((l) => alphaNum.map((rest) => l + rest)));
+export const identifier = token(
+  letter.bind((l) => alphaNum.map((rest) => l + rest)),
+);
 
 /**
  * Parses a single digit
  */
-export const digit = filter(item, isDigit).map(Number.parseInt);
+export const digit = filter(take, isDigit).map(Number.parseInt);
 
 /**
  * Parses a natural number

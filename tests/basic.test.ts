@@ -2,34 +2,34 @@ import { assertEquals } from "@std/assert";
 import {
   digit,
   integer,
-  item,
+  take,
   letter,
   listOfInts,
   literal,
   lower,
   natural,
-  twoItems,
+  takeTwo,
   upper,
 } from "../examples/basic.ts";
 import { any, repeat } from "../parser.ts";
 
 Deno.test("item", () => {
-  assertEquals(item.parse(""), []);
-  assertEquals(item.parse("monad"), [{
+  assertEquals(take.parse(""), []);
+  assertEquals(take.parse("monad"), [{
     value: "m",
     remaining: "onad",
   }]);
 });
 
 Deno.test("two items", () => {
-  assertEquals(twoItems.parse("m"), []);
-  assertEquals(twoItems.parse("monad"), [{
+  assertEquals(takeTwo.parse("m"), []);
+  assertEquals(takeTwo.parse("monad"), [{
     value: "mo",
     remaining: "nad",
   }]);
 });
 
-const oneOrTwoItems = any(item, twoItems);
+const oneOrTwoItems = any(take, takeTwo);
 
 Deno.test("alternation", () => {
   assertEquals(oneOrTwoItems.parse(""), []);
