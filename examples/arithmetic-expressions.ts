@@ -4,13 +4,13 @@
 
 import {
   bracket,
+  first,
   foldL1,
   foldR1,
-  first,
   memoize,
   type Parser,
 } from "../parser.ts";
-import { integer, literal } from "./basic.ts";
+import { literal, number } from "./basic.ts";
 
 const addOp = first(
   literal("+").map(() => (a: number, b: number) => a + b),
@@ -22,10 +22,10 @@ const mulOp = first(
 );
 const expOp = literal("^").map(() => (a: number, b: number) => a ** b);
 
-// integer | (expr)
+// decimal | integer | (expr)
 const atom = memoize(() =>
   first(
-    integer,
+    number,
     bracket(
       literal("("),
       expr,
