@@ -7,8 +7,8 @@ import {
   chainl1,
   chainr1,
   first,
-  lazy,
-  type Parser
+  memoize,
+  type Parser,
 } from "../parser.ts";
 import { literal, natural } from "./basic.ts";
 
@@ -20,7 +20,7 @@ const additiveOp = first(
 const expOp = literal("^").map(() => (a: number, b: number) => a ** b);
 
 // natural | (expr)
-const factor: Parser<number> = lazy(() =>
+const factor: Parser<number> = memoize(() =>
   first(
     natural,
     bracket(
