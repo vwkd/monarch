@@ -23,12 +23,12 @@ const mulOp = first(
 const expOp = literal("^").map(() => (a: number, b: number) => a ** b);
 
 // integer | (expr)
-const atom: Parser<number> = memoize(() =>
+const atom = memoize(() =>
   first(
     integer,
     bracket(
       literal("("),
-      arithmetic,
+      expr,
       literal(")"),
     ),
   )
@@ -36,4 +36,5 @@ const atom: Parser<number> = memoize(() =>
 
 const factor = chainr1(atom, expOp);
 const term = chainl1(factor, mulOp);
-export const arithmetic = chainl1(term, addOp);
+
+export const expr: Parser<number> = chainl1(term, addOp);
