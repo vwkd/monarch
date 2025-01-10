@@ -25,11 +25,11 @@ const factor: Parser<number> = memoize(() =>
     natural,
     bracket(
       literal("("),
-      expr,
+      arithmetic,
       literal(")"),
     ),
   )
 );
 
 const term = chainr1(factor, expOp);
-export const expr = chainl1(term, additiveOp);
+export const arithmetic = chainl1(term, additiveOp);
