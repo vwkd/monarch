@@ -9,6 +9,7 @@ import {
   repeat,
   result,
   sepBy1,
+  sequence,
 } from "../parser.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
@@ -110,12 +111,27 @@ export const natural = token(foldL1(
 ));
 
 /**
- * Parses an integer
+ * Parses an integer (element of ℤ)
  */
 export const integer = token(first(
   literal("-").bind(() => natural).map((x) => -x),
+  literal("+").bind(() => natural).map((x) => x),
   natural,
 ));
+
+/**
+ * Parses a decimal number aka a float
+ */
+export const decimal = token(
+  sequence([integer, literal("."), natural]).map(([pre, _, post]) =>
+    pre + Math.pow(10, -Math.ceil(Math.log10(post))) * post
+  ),
+);
+
+/**
+ * Parses a number as decimal | integer
+ */
+export const number = first(decimal, integer);
 
 export const listOf = <T>(p: Parser<T>) =>
   bracket(
