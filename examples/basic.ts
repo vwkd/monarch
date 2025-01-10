@@ -1,9 +1,9 @@
 import {
   bracket,
-  foldL1,
   createParser,
   filter,
   first,
+  foldL1,
   many,
   type Parser,
   repeat,

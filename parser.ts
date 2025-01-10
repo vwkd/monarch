@@ -118,17 +118,26 @@ export const orThrow = <T>(parser: Parser<T>, error: string): Parser<T> => {
 // Sequencing
 
 /**
+ * Unpacks an array of parsers types
+ */
+type Unpack<T> = {
+  [K in keyof T]: T[K] extends Parser<infer A> ? A : never;
+};
+
+/**
  * Makes a sequence of parses and returns the array of parse results
  */
-export const sequence = <T>(...parsers: Parser<T>[]): Parser<T[]> => {
-  const results: T[] = [];
-
-  return parsers.reduce((prev, curr) => {
-    return prev.bind((x) => {
-      results.push(x);
-      return curr;
-    });
-  }).bind((x) => result([...results, x]));
+export const sequence = <const A extends readonly Parser<any>[]>(
+  parsers: A,
+  acc = [] as Unpack<A>,
+): Parser<Unpack<A>> => {
+  if (parsers.length > 0) {
+    // @ts-ignore existential types
+    return parsers[0].bind((x) => {
+      return sequence(parsers.slice(1), [...acc, x]);
+    }).bind((arr) => result(arr));
+  }
+  return result(acc);
 };
 
 // Alternation
@@ -232,10 +241,8 @@ export const bracket = <T, U, V>(
   openBracket: Parser<T>,
   body: Parser<U>,
   closeBracket: Parser<V>,
-) => {
-  return openBracket.bind(() =>
-    body.bind((b) => closeBracket.bind(() => result(b)))
-  );
+): Parser<U> => {
+  return sequence([openBracket, body, closeBracket]).bind((arr) => result(arr[1]));
 };
 
 /**
