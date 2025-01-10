@@ -4,8 +4,8 @@
 
 import {
   bracket,
-  chainl1,
-  chainr1,
+  foldL1,
+  foldR1,
   first,
   memoize,
   type Parser,
@@ -34,7 +34,7 @@ const atom = memoize(() =>
   )
 );
 
-const factor = chainr1(atom, expOp);
-const term = chainl1(factor, mulOp);
+const factor = foldR1(atom, expOp);
+const term = foldL1(factor, mulOp);
 
-export const expr: Parser<number> = chainl1(term, addOp);
+export const expr: Parser<number> = foldL1(term, addOp);

@@ -1,6 +1,6 @@
 import {
   bracket,
-  chainl1,
+  foldL1,
   createParser,
   filter,
   first,
@@ -104,7 +104,7 @@ export const digit = filter(take, isDigit).map(Number.parseInt);
 /**
  * Parses a natural number
  */
-export const natural = token(chainl1(
+export const natural = token(foldL1(
   digit,
   result((a: number, b: number) => 10 * a + b),
 ));

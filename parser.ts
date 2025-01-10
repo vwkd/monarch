@@ -241,7 +241,7 @@ export const bracket = <T, U, V>(
 /**
  * Parses non-empty sequences of items separated by an operator parser that associates to the left and performs the fold
  */
-export const chainl1 = <T, U extends (a: T, b: T) => T>(
+export const foldL1 = <T, U extends (a: T, b: T) => T>(
   item: Parser<T>,
   operator: Parser<U>,
 ): Parser<T> => {
@@ -254,35 +254,39 @@ export const chainl1 = <T, U extends (a: T, b: T) => T>(
   return item.bind(rest);
 };
 
-export const chainl = <T, U extends (a: T, b: T) => T>(
+/**
+ * Parses maybe-empty sequences of items separated by an operator parser that associates to the left and performs the fold
+ */
+export const foldL = <T, U extends (a: T, b: T) => T>(
   item: Parser<T>,
   operator: Parser<U>,
 ): Parser<T> => {
-  return first(chainl1(item, operator), item);
+  return first(foldL1(item, operator), item);
 };
 
 /**
  * Parses non-empty sequences of items separated by an operator parser that associates to the right and performs the fold
  */
-export const chainr1 = <T, U extends (a: T, b: T) => T>(
+export const foldR1 = <T, U extends (a: T, b: T) => T>(
   item: Parser<T>,
   operator: Parser<U>,
 ): Parser<T> => {
   return item.bind((x) => {
     return first(
-      operator.bind((f) =>
-        chainr1(item, operator).bind((y) => result(f(x, y)))
-      ),
+      operator.bind((f) => foldR1(item, operator).bind((y) => result(f(x, y)))),
       result(x),
     );
   });
 };
 
-export const chainr = <T, U extends (a: T, b: T) => T>(
+/**
+ * Parses maybe-empty sequences of items separated by an operator parser that associates to the right and performs the fold
+ */
+export const foldR = <T, U extends (a: T, b: T) => T>(
   item: Parser<T>,
   operator: Parser<U>,
 ): Parser<T> => {
-  return first(chainr1(item, operator), item);
+  return first(foldR1(item, operator), item);
 };
 
 // Filtering
