@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { digit, letter, literal, take, takeTwo } from "../examples/basic.ts";
+import { digit, letter, literal, take, takeTwo } from "../examples/common.ts";
 import { any, iterate, many, result, sequence, zero } from "../parser.ts";
 
 Deno.test("zero is an absorbing element of flatMap", () => {

@@ -9,7 +9,7 @@ import {
   result,
   sepBy
 } from "../parser.ts";
-import { integer, literal, token, word } from "./basic.ts";
+import { integer, literal, token, word } from "./common.ts";
 
 /**
  * Zips arrays of the same length

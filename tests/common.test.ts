@@ -10,7 +10,7 @@ import {
   natural,
   takeTwo,
   upper,
-} from "../examples/basic.ts";
+} from "../examples/common.ts";
 import { any, repeat } from "../parser.ts";
 
 Deno.test("item", () => {

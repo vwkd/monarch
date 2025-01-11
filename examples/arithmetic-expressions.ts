@@ -10,7 +10,7 @@ import {
   memoize,
   type Parser,
 } from "../parser.ts";
-import { literal, number } from "./basic.ts";
+import { literal, number } from "./common.ts";
 
 const addOp = first(
   literal("+").map(() => (a: number, b: number) => a + b),
