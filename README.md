@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/assets/monarch.png" alt="">
+  <img src="/assets/monarch.png" width="300" alt="">
 </div>
 
 # Monarch
