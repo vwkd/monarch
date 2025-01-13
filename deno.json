@@ -4,6 +4,7 @@
   "exports": "./index.ts",
   "license": "MIT",
   "tasks": {
+    "bump": "deno run --allow-read --allow-write --allow-run @fcrozatier/bump",
     "coverage": "deno test --coverage && deno coverage --html && open coverage/html/index.html"
   },
   "imports": {
