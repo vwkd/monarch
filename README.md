@@ -77,7 +77,7 @@ filter(take, isEven).parse("24") // [{value: '2', remaining: '4'}]
 
 ### `many`
 
-To apply a given parser as many times as possible (0 or more), wrap it with the `many<T>(parser: Parser<T>): Parser<T[]>` combinator. To apply the given parser 1 or more times, use `many1`. Its success return value is a array of `T` values
+To apply a given parser as many times as possible (0 or more), wrap it with the `many<T>(parser: Parser<T>): Parser<T[]>` combinator. To apply the given parser 1 or more times, use `many1`. Its success return value is an array of `T` values
 
 ```js
 const digit = filter(take, isDigit)
@@ -191,7 +191,7 @@ For recursive grammars you'll have circular dependencies between your parsers wh
 const add = literal("+").map(() => (a: number, b: number) => a + b);
 const mul = literal("*").map(() => (a: number, b: number) => a * b);
 
-// integer | expr
+// integer | (expr)
 const factor = memoize(() => first(
   integer,
   bracket(
@@ -215,7 +215,7 @@ The `iterate<T>(parser: T): Parser<T[]>` combinator applies a given parser many 
 iterate(digit).parse("42") // [{value: [4, 2], remaining: ""}, {value: [4], remaining: "2"}, {value: [], remaining: "42"}]
 ```
 
-## Reference
+## API Reference
 
 Common parsers can be found in the `/examples/common.ts` module
 
