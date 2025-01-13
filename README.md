@@ -8,10 +8,10 @@ Monarch is a type-safe parser combinator library
 Depending on your runtime / package-manager:
 
 ```sh
-deno add jsr:@fcrozatier/type-strip
-npx jsr add @fcrozatier/type-strip
-pnpm dlx jsr add @fcrozatier/type-strip
-yarn dlx jsr add @fcrozatier/type-strip
+deno add jsr:@fcrozatier/monarch
+npx jsr add @fcrozatier/monarch
+pnpm dlx jsr add @fcrozatier/monarch
+yarn dlx jsr add @fcrozatier/monarch
 ```
 
 ## Examples
