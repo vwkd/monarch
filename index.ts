@@ -71,7 +71,7 @@ export class Parser<T> {
   /**
    * Concatenates the resulting parse arrays
    */
-  plus(...parsers: Parser<T>[]) {
+  plus(...parsers: Parser<T>[]): Parser<T> {
     return createParser((input) => {
       return [this, ...parsers].flatMap((parser) => parser.parse(input));
     });
@@ -98,7 +98,7 @@ export const result = <T>(value: T): Parser<T> => {
  *
  * It is the unit of alternation and plus, and also is an absorbing element of flatMap
  */
-export const zero = createParser<any>((_: State) => []);
+export const zero: Parser<any> = createParser((_: State) => []);
 
 /**
  * Decorator that makes a parser return an error message if it fails

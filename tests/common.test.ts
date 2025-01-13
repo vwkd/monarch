@@ -11,7 +11,7 @@ import {
   takeTwo,
   upper,
 } from "../examples/common.ts";
-import { any, repeat } from "../parser.ts";
+import { any, repeat } from "../index.ts";
 
 Deno.test("item", () => {
   assertEquals(take.parse(""), []);

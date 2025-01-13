@@ -9,7 +9,7 @@ import {
   foldR1,
   memoize,
   type Parser,
-} from "../parser.ts";
+} from "../index.ts";
 import { literal, number } from "./common.ts";
 
 const addOp = first(

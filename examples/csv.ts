@@ -8,7 +8,7 @@ import {
   type Parser,
   result,
   sepBy
-} from "../parser.ts";
+} from "../index.ts";
 import { integer, literal, token, word } from "./common.ts";
 
 /**

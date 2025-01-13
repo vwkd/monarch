@@ -10,7 +10,7 @@ import {
   result,
   sepBy1,
   sequence,
-} from "../parser.ts";
+} from "../index.ts";
 
 export const regexPredicate = (regex: RegExp) => (input: string) =>
   regex.test(input);
