@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="/assets/monarch.png" alt="">
+</div>
+
 # Monarch
 
 Monarch is a type-safe parser combinator library
