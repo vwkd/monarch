@@ -15,12 +15,12 @@ import {
 export const regexPredicate = (regex: RegExp) => (input: string) =>
   regex.test(input);
 
-const isAlphaNum = regexPredicate(/^\w/);
-const isLetter = regexPredicate(/^[a-zA-Z]/);
-const isLower = regexPredicate(/^[a-z]/);
-const isUpper = regexPredicate(/^[A-Z]/);
-const isDigit = regexPredicate(/^\d/);
-const isSpace = regexPredicate(/^\s/);
+export const isAlphaNum = regexPredicate(/^\w/);
+export const isLetter = regexPredicate(/^[a-zA-Z]/);
+export const isLower = regexPredicate(/^[a-z]/);
+export const isUpper = regexPredicate(/^[A-Z]/);
+export const isDigit = regexPredicate(/^\d/);
+export const isSpace = regexPredicate(/^\s/);
 
 /**
  * Parses the next character
