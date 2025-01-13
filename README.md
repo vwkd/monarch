@@ -20,7 +20,7 @@ See the `/examples` folder for an arithmetic expression interpreter, a csv parse
 
 ## Getting Started Guide
 
-A parser is an instance of a class `Parser<T>` implementing a `parse(input: string): ParseResult<T>` method which outputs a `ParseResult<T>[]`. The array contains many results in the case of an ambiguous grammar and allows to use the backtracking capability of the parser for exploratory means (see the tests)
+A parser is an instance of a class `Parser<T>` implementing a `parse(input: string): ParseResult<T>[]` method which outputs a `ParseResult<T>[]`. The array contains many results in the case of an ambiguous grammar and allows to use the backtracking capability of the parser for exploratory means (see the examples)
 
 A `ParseResult` is an object containing the parsed `value`, the `remaining` string to parse, or an eventual `error` message
 
@@ -32,7 +32,7 @@ type ParseResult<T> = {
 };
 ```
 
-Under the hood the `Parser<T>` generic class is a Monad, but no knowledge of this structure is required to use the library.
+Under the hood the `Parser<T>` generic class is a Monad, but no knowledge of this structure is required to use the library. See the [References](#references) section for more.
 
 ### `take`
 
@@ -216,6 +216,8 @@ iterate(digit).parse("42") // [{value: [4, 2], remaining: ""}, {value: [4], rema
 ```
 
 ## Reference
+
+Common parsers can be found in the `/examples/common.ts` module
 
 ### Base helpers
 
