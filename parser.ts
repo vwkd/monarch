@@ -140,12 +140,25 @@ export const sequence = <const A extends readonly Parser<any>[]>(
   return result(acc);
 };
 
+/**
+ * Utility combinator for the common open-body-close pattern
+ */
+export const bracket = <T, U, V>(
+  openBracket: Parser<T>,
+  body: Parser<U>,
+  closeBracket: Parser<V>,
+): Parser<U> => {
+  return sequence([openBracket, body, closeBracket]).bind((arr) =>
+    result(arr[1])
+  );
+};
+
 // Alternation
 
 /**
  * Returns all matching parses
  */
-export const any = <T>(...parsers: Parser<T>[]) => {
+export const any = <T>(...parsers: Parser<T>[]): Parser<T> => {
   return createParser((input) => {
     const results = parsers.flatMap((parser) => parser.parse(input));
 
@@ -160,7 +173,7 @@ export const any = <T>(...parsers: Parser<T>[]) => {
 // Choice
 
 /**
- * Only returns the first successful parse results
+ * Only returns the first successful parse result
  */
 export const first = <T>(
   ...parsers: Parser<T>[]
@@ -235,14 +248,6 @@ export const sepBy = <T, U>(
   sep: Parser<U>,
 ): Parser<T[]> => {
   return first(sepBy1(parser, sep), result([]));
-};
-
-export const bracket = <T, U, V>(
-  openBracket: Parser<T>,
-  body: Parser<U>,
-  closeBracket: Parser<V>,
-): Parser<U> => {
-  return sequence([openBracket, body, closeBracket]).bind((arr) => result(arr[1]));
 };
 
 /**
