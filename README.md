@@ -263,3 +263,11 @@ https://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf
 
 - Monadic parser combinators, G Hutton, E Meijer - 1996
 https://people.cs.nott.ac.uk/pszgmh/monparsing.pdf
+
+- Jeroen Fokker. Functional parsers. In Advanced Functional Programming,
+First International Spring School, LNCS, 925:1–23, B˚astad, Sweden, May 1995
+
+- Parsec: Direct Style Monadic Parser Combinators For The Real World, Daan Leijen, Erik Meijer
+UU-CS-2001-27 | July 2001
+User Modeling 2007, 11th International Conference, UM 2007, Corfu, Greece, June 25-29, 2007
+https://www.microsoft.com/en-us/research/publication/parsec-direct-style-monadic-parser-combinators-for-the-real-world/
