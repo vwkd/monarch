@@ -2,14 +2,8 @@
  * Example parser for CSV files
  */
 
-import {
-  bracket,
-  first,
-  type Parser,
-  result,
-  sepBy
-} from "../index.ts";
-import { integer, literal, token, word } from "./common.ts";
+import { bracket, first, type Parser, result, sepBy } from "../index.ts";
+import { integer, token, word } from "./common.ts";
 
 /**
  * Zips arrays of the same length
@@ -23,20 +17,20 @@ const zip = <T, U>(array1: T[], array2: U[]): [T, U][] => {
   });
 };
 
-const string = token(bracket(literal('"'), word, literal('"')));
+const string = bracket(token('"'), word, token('"'));
 const item = first<string | number>(integer, string);
 
 const header: Parser<
   (row: (string | number)[]) => Record<string, (string | number)>
 > = sepBy(
   string,
-  literal(","),
+  token(","),
 ).map((headings) => (row: (string | number)[]) => {
   return Object.fromEntries(zip(headings, row));
 });
 
-const row = sepBy(item, literal(","));
-const rows = sepBy(row, literal(";"));
+const row = sepBy(item, token(","));
+const rows = sepBy(row, token(";"));
 
 export const csv: Parser<Record<string, string | number>[]> = header.bind((
   makeEntry,

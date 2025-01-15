@@ -26,6 +26,18 @@ export const isDigit: Predicate = regexPredicate(/^\d/);
 export const isSpace: Predicate = regexPredicate(/^\s/);
 
 /**
+ * Creates a parser matching against a given regex
+ */
+export const regex = (re: RegExp): Parser<string> => {
+  return createParser((input) => {
+    const match = input.match(re);
+    return match && match.index === 0
+      ? [{ value: match[0], remaining: input.slice(match[0].length) }]
+      : [];
+  });
+};
+
+/**
  * Parses the next character
  */
 export const take: Parser<string> = createParser((input) => {
@@ -43,24 +55,24 @@ export const takeTwo: Parser<string> = repeat(take, 2).map((arr) =>
 );
 
 /**
- * Parses spaces
+ * Parses white space
  */
-export const spaces: Parser<string[]> = many(filter(take, isSpace));
+export const whitespace: Parser<string> = regex(/\s*/);
 
 /**
  * Discards trailing spaces
  */
-export const token: <T>(parser: Parser<T>) => Parser<T> = <T>(
+export const trimEnd: <T>(parser: Parser<T>) => Parser<T> = <T>(
   parser: Parser<T>,
 ) => {
-  return parser.bind((p) => spaces.bind(() => result(p)));
+  return parser.bind((p) => whitespace.bind(() => result(p)));
 };
 
 /**
- * Parses a single character or a keyword
+ * Parses a given string
  */
 export const literal: (value: string) => Parser<string> = (value: string) => {
-  return token(createParser((input) => {
+  return (createParser((input) => {
     if (input.startsWith(value)) {
       return [{ value, remaining: input.slice(value.length) }];
     } else {
@@ -75,6 +87,18 @@ export const literal: (value: string) => Parser<string> = (value: string) => {
     }
   }));
 };
+
+/**
+ * Parses a keyword and discards trailing spaces
+ * Alias: token
+ */
+export const keyword = (value: string) => trimEnd(literal(value));
+
+/**
+ * Parses a token and discards trailing spaces
+ * Alias: keyword
+ */
+export const token = (value: string) => trimEnd(literal(value));
 
 /**
  * Parses a single letter (case insensitive)
@@ -102,7 +126,7 @@ export const alphaNum: Parser<string> = many(filter(take, isAlphaNum)).map((
   letters,
 ) => letters.join(""));
 
-export const identifier: Parser<string> = token(
+export const identifier: Parser<string> = trimEnd(
   letter.bind((l) => alphaNum.map((rest) => l + rest)),
 );
 
@@ -114,7 +138,7 @@ export const digit: Parser<number> = filter(take, isDigit).map(Number.parseInt);
 /**
  * Parses a natural number
  */
-export const natural: Parser<number> = token(foldL1(
+export const natural: Parser<number> = trimEnd(foldL1(
   digit,
   result((a: number, b: number) => 10 * a + b),
 ));
@@ -122,7 +146,7 @@ export const natural: Parser<number> = token(foldL1(
 /**
  * Parses an integer (element of ℤ)
  */
-export const integer: Parser<number> = token(first(
+export const integer: Parser<number> = trimEnd(first(
   literal("-").bind(() => natural).map((x) => -x),
   literal("+").bind(() => natural).map((x) => x),
   natural,
@@ -131,7 +155,7 @@ export const integer: Parser<number> = token(first(
 /**
  * Parses a decimal number aka a float
  */
-export const decimal: Parser<number> = token(
+export const decimal: Parser<number> = trimEnd(
   sequence([integer, literal("."), natural]).map(([pre, _, post]) =>
     pre + Math.pow(10, -Math.ceil(Math.log10(post))) * post
   ),
@@ -144,9 +168,9 @@ export const number: Parser<number> = first(decimal, integer);
 
 export const listOf: <T>(p: Parser<T>) => Parser<T[]> = <T>(p: Parser<T>) =>
   bracket(
-    literal("["),
-    sepBy1(p, literal(",")),
-    literal("]"),
+    token("["),
+    sepBy1(p, token(",")),
+    token("]"),
   );
 
 export const listOfInts: Parser<number[]> = listOf(integer);

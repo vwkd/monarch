@@ -78,7 +78,7 @@ Deno.test("literal", () => {
 
   assertEquals(literal("hello").parse("hello there"), [{
     value: "hello",
-    remaining: "there",
+    remaining: " there",
   }]);
   assertEquals(literal("hello").parse("helicopter"), [{
     error: "Expected hello, but got 'helic'",
