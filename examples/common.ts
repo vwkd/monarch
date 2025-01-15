@@ -12,20 +12,23 @@ import {
   sequence,
 } from "../index.ts";
 
-export const regexPredicate = (regex: RegExp) => (input: string) =>
-  regex.test(input);
+type Predicate = (input: string) => boolean;
+type RegexPredicate = (regex: RegExp) => Predicate;
 
-export const isAlphaNum = regexPredicate(/^\w/);
-export const isLetter = regexPredicate(/^[a-zA-Z]/);
-export const isLower = regexPredicate(/^[a-z]/);
-export const isUpper = regexPredicate(/^[A-Z]/);
-export const isDigit = regexPredicate(/^\d/);
-export const isSpace = regexPredicate(/^\s/);
+export const regexPredicate: RegexPredicate =
+  (regex: RegExp) => (input: string) => regex.test(input);
+
+export const isAlphaNum: Predicate = regexPredicate(/^\w/);
+export const isLetter: Predicate = regexPredicate(/^[a-zA-Z]/);
+export const isLower: Predicate = regexPredicate(/^[a-z]/);
+export const isUpper: Predicate = regexPredicate(/^[A-Z]/);
+export const isDigit: Predicate = regexPredicate(/^\d/);
+export const isSpace: Predicate = regexPredicate(/^\s/);
 
 /**
  * Parses the next character
  */
-export const take = createParser((input) => {
+export const take: Parser<string> = createParser((input) => {
   if (input.length > 0) {
     return [{ value: input[0], remaining: input.slice(1) }];
   }
@@ -35,24 +38,28 @@ export const take = createParser((input) => {
 /**
  * Parses the next two characters
  */
-export const takeTwo = repeat(take, 2).map((arr) => arr.join(""));
+export const takeTwo: Parser<string> = repeat(take, 2).map((arr) =>
+  arr.join("")
+);
 
 /**
  * Parses spaces
  */
-export const spaces = many(filter(take, isSpace));
+export const spaces: Parser<string[]> = many(filter(take, isSpace));
 
 /**
  * Discards trailing spaces
  */
-export const token = <T>(parser: Parser<T>) => {
+export const token: <T>(parser: Parser<T>) => Parser<T> = <T>(
+  parser: Parser<T>,
+) => {
   return parser.bind((p) => spaces.bind(() => result(p)));
 };
 
 /**
  * Parses a single character or a keyword
  */
-export const literal = (value: string) => {
+export const literal: (value: string) => Parser<string> = (value: string) => {
   return token(createParser((input) => {
     if (input.startsWith(value)) {
       return [{ value, remaining: input.slice(value.length) }];
@@ -72,40 +79,42 @@ export const literal = (value: string) => {
 /**
  * Parses a single letter (case insensitive)
  */
-export const letter = filter(take, isLetter);
+export const letter: Parser<string> = filter(take, isLetter);
 
 /**
  * Pareses a single lower case letter
  */
-export const lower = filter(take, isLower);
+export const lower: Parser<string> = filter(take, isLower);
 
 /**
  * Pareses a single upper case letter
  */
-export const upper = filter(take, isUpper);
+export const upper: Parser<string> = filter(take, isUpper);
 
 /**
  * Parser a string of letters
  */
-export const word = many(letter).map((letters) => letters.join(""));
-
-export const alphaNum = many(filter(take, isAlphaNum)).map((letters) =>
+export const word: Parser<string> = many(letter).map((letters) =>
   letters.join("")
 );
 
-export const identifier = token(
+export const alphaNum: Parser<string> = many(filter(take, isAlphaNum)).map((
+  letters,
+) => letters.join(""));
+
+export const identifier: Parser<string> = token(
   letter.bind((l) => alphaNum.map((rest) => l + rest)),
 );
 
 /**
  * Parses a single digit
  */
-export const digit = filter(take, isDigit).map(Number.parseInt);
+export const digit: Parser<number> = filter(take, isDigit).map(Number.parseInt);
 
 /**
  * Parses a natural number
  */
-export const natural = token(foldL1(
+export const natural: Parser<number> = token(foldL1(
   digit,
   result((a: number, b: number) => 10 * a + b),
 ));
@@ -113,7 +122,7 @@ export const natural = token(foldL1(
 /**
  * Parses an integer (element of ℤ)
  */
-export const integer = token(first(
+export const integer: Parser<number> = token(first(
   literal("-").bind(() => natural).map((x) => -x),
   literal("+").bind(() => natural).map((x) => x),
   natural,
@@ -122,7 +131,7 @@ export const integer = token(first(
 /**
  * Parses a decimal number aka a float
  */
-export const decimal = token(
+export const decimal: Parser<number> = token(
   sequence([integer, literal("."), natural]).map(([pre, _, post]) =>
     pre + Math.pow(10, -Math.ceil(Math.log10(post))) * post
   ),
@@ -131,16 +140,16 @@ export const decimal = token(
 /**
  * Parses a number as decimal | integer
  */
-export const number = first(decimal, integer);
+export const number: Parser<number> = first(decimal, integer);
 
-export const listOf = <T>(p: Parser<T>) =>
+export const listOf: <T>(p: Parser<T>) => Parser<T[]> = <T>(p: Parser<T>) =>
   bracket(
     literal("["),
     sepBy1(p, literal(",")),
     literal("]"),
   );
 
-export const listOfInts = listOf(integer);
+export const listOfInts: Parser<number[]> = listOf(integer);
 
 const assertDigit = createParser((input) => {
   return /^\d/.test(input)
