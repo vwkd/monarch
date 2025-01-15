@@ -2,7 +2,7 @@
   "name": "@fcrozatier/monarch",
   "version": "1.0.0",
   "exports": {
-    "./": "./index.ts",
+    ".": "./index.ts",
     "./common": "./examples/common.ts"
   },
   "license": "MIT",
