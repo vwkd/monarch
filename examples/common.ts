@@ -92,13 +92,15 @@ export const literal: (value: string) => Parser<string> = (value: string) => {
  * Parses a keyword and discards trailing spaces
  * Alias: token
  */
-export const keyword = (value: string) => trimEnd(literal(value));
+export const keyword: (value: string) => Parser<string> = (value: string) =>
+  trimEnd(literal(value));
 
 /**
  * Parses a token and discards trailing spaces
  * Alias: keyword
  */
-export const token = (value: string) => trimEnd(literal(value));
+export const token: (value: string) => Parser<string> = (value: string) =>
+  trimEnd(literal(value));
 
 /**
  * Parses a single letter (case insensitive)
