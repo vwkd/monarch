@@ -1,9 +1,10 @@
 {
   "name": "@fcrozatier/monarch",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "exports": {
     ".": "./index.ts",
-    "./common": "./examples/common.ts"
+    "./common": "./examples/common.ts",
+    "./html": "./examples/html.ts"
   },
   "license": "MIT",
   "tasks": {
