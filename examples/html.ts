@@ -15,7 +15,7 @@ import {
   token,
   trimEnd,
   whitespace,
-} from "@fcrozatier/monarch/common";
+} from "./common.ts";
 
 export type mElement = {
   tagName: string;
