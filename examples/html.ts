@@ -267,7 +267,7 @@ export const Kind = {
   NORMAL: "NORMAL",
 } as const;
 
-const elementKind = (tag: string): keyof typeof Kind => {
+export const elementKind = (tag: string): keyof typeof Kind => {
   if (voidElements.includes(tag)) return Kind.VOID;
   if (rawTextElements.includes(tag)) return Kind.RAW_TEXT;
   if (escapableRawTextElements.includes(tag)) return Kind.ESCAPABLE_RAW_TEXT;
@@ -294,7 +294,7 @@ const voidElements = [
 const rawTextElements = ["script", "style"];
 const escapableRawTextElements = ["textarea", "title"];
 
-const booleanAttributes = [
+export const booleanAttributes = [
   "allowfullscreen", // on <iframe>
   "async", // on <script>
   "autofocus", // on <button>, <input>, <select>, <textarea>
