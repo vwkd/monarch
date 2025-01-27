@@ -28,13 +28,13 @@ export type mElement = {
 export type mFragment = (mElement | string)[];
 
 // https://html.spec.whatwg.org/#comments
-export const comment = bracket(
+export const comment: Parser<string> = bracket(
   literal("<!--"),
   regex(/^(?!>|->)(?:.|\n)*?(?=(?:<\!--|-->|--!>|<!-)|$)/),
   literal("-->"),
 );
 
-export const comments = trimEnd(sepBy(whitespace, comment));
+export const comments: Parser<string[]> = trimEnd(sepBy(whitespace, comment));
 
 /**
  * Remove trailing spaces and comments
@@ -43,7 +43,7 @@ const cleanEnd = <T>(parser: Parser<T>) =>
   parser.bind((p) => comments.bind(() => result(p)));
 
 // https://html.spec.whatwg.org/#syntax-doctype
-export const doctype = cleanEnd(
+export const doctype: Parser<string> = cleanEnd(
   sequence([
     trimEnd(regex(/^<!DOCTYPE/i)),
     trimEnd(regex(/^html/i)),
