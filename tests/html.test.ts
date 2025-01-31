@@ -33,10 +33,10 @@ Deno.test("comment", () => {
 
 Deno.test("comments", () => {
   const comments = fragments.parseOrThrow(`
-    <!-- hello -->
-    <!-- world ->-> -- > ->->->-- -> still comment -->
+    <!-- consecutive comments -->
+    <!-- arrows ->-> -- > ->->->-- -> inside comments -->
     <div>
-      <!-- <span>something</span> -->
+      <!-- <span>html inside comment</span> -->
     </div>
   `);
 
@@ -56,6 +56,7 @@ Deno.test("nested comments", () => {
 
       <!-- This is a p -->
       <p>
+        Some text
         <!-- This is a button -->
         <button>click</button>
         <!-- Now below the button -->
@@ -79,6 +80,7 @@ Deno.test("nested comments", () => {
       kind: Kind.NORMAL,
       attributes: [],
       children: [
+        "Some text\n        ",
         {
           tagName: "button",
           kind: Kind.NORMAL,

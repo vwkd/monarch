@@ -21,22 +21,35 @@ export type mElement = {
 
 export type mFragment = (mElement | string)[];
 
-// https://html.spec.whatwg.org/#comments
+/**
+ * Parse an HTML comment
+ *
+ * @ref https://html.spec.whatwg.org/#comments
+ */
 export const comment: Parser<string> = bracket(
   literal("<!--"),
   regex(/^(?!>|->)(?:.|\n)*?(?=(?:<\!--|-->|--!>|<!-)|$)/),
   literal("-->"),
 );
 
-export const comments: Parser<string[]> = trimEnd(sepBy(whitespace, comment));
+/**
+ * Parse a sequence of comments surrounded by whitespace, and discards the whole match
+ */
+export const spaceAroundComments: Parser<string> = trimEnd(
+  sepBy(whitespace, comment),
+).map(() => "");
 
 /**
  * Remove trailing spaces and comments
  */
 const cleanEnd = <T>(parser: Parser<T>) =>
-  parser.bind((p) => comments.bind(() => result(p)));
+  parser.bind((p) => spaceAroundComments.bind(() => result(p)));
 
-// https://html.spec.whatwg.org/#syntax-doctype
+/**
+ * Parse a modern HTML doctype
+ *
+ * @ref https://html.spec.whatwg.org/#syntax-doctype
+ */
 export const doctype: Parser<string> = cleanEnd(
   sequence([
     trimEnd(regex(/^<!DOCTYPE/i)),
@@ -49,11 +62,16 @@ export const doctype: Parser<string> = cleanEnd(
 const singleQuote = token("'");
 const doubleQuote = token('"');
 
-const rawText = regex(/^[^<]+/);
+const rawText = cleanEnd(regex(/^[^<]+/));
 
-// Attributes
-// https://html.spec.whatwg.org/#attributes-2
-const attributeName = trimEnd(regex(/^[^\s="'>\/\p{Noncharacter_Code_Point}]+/u))
+/**
+ * Parse an HTML attribute name
+ *
+ * @ref https://html.spec.whatwg.org/#attributes-2
+ */
+const attributeName = trimEnd(
+  regex(/^[^\s="'>\/\p{Noncharacter_Code_Point}]+/u),
+)
   .error(
     "Expected a valid attribute name",
   );
@@ -95,7 +113,7 @@ const startTag: Parser<
 
   if (tagName !== "pre") {
     // trim comments inside the start tag of all non pre elements
-    return comments.bind(() => result({ tagName, attributes }));
+    return spaceAroundComments.bind(() => result({ tagName, attributes }));
   }
 
   return result({ tagName, attributes });
@@ -181,7 +199,7 @@ export const element: Parser<mElement> = cleanEnd(
 );
 
 export const fragments: Parser<mFragment> = sequence([
-  comments,
+  spaceAroundComments,
   many(
     first<mElement | string>(element, rawText),
   ),
@@ -190,7 +208,7 @@ export const fragments: Parser<mFragment> = sequence([
 export const shadowRoot: Parser<mElement> = createParser(
   (input, position) => {
     const result = sequence([
-      comments,
+      spaceAroundComments,
       element,
     ]).map(([_, element]) => element).parse(input, position);
 
@@ -223,9 +241,9 @@ export const shadowRoot: Parser<mElement> = createParser(
 
 // https://html.spec.whatwg.org/#writing
 export const html: Parser<[string, mElement]> = sequence([
-  comments,
+  spaceAroundComments,
   doctype,
-  comments,
+  spaceAroundComments,
   element,
 ])
   .map(([_0, doctype, _1, document]) => [doctype, document]);
