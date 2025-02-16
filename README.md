@@ -16,6 +16,41 @@ Monarch is a full-featured type-safe parser combinator library with:
 Easily build an error-reporting parser by combining, extending and customizing
 the provided base parsers and their error messages.
 
+## Table of content
+
+- [Monarch](#monarch)
+  - [Table of content](#table-of-content)
+  - [Installation](#installation)
+  - [Examples](#examples)
+  - [Documentation](#documentation)
+  - [Getting Started Guide](#getting-started-guide)
+    - [`take`](#take)
+    - [`repeat`](#repeat)
+    - [`literal`](#literal)
+    - [`filter`](#filter)
+    - [`regex`](#regex)
+    - [`many`](#many)
+    - [`map`](#map)
+    - [`sequence`](#sequence)
+    - [`bind`](#bind)
+    - [`skip`](#skip)
+    - [`first` and `any`](#first-and-any)
+    - [`sepBy`](#sepby)
+    - [`foldL` and `foldR`](#foldl-and-foldr)
+    - [`memoize` and `lazy`](#memoize-and-lazy)
+    - [`iterate`](#iterate)
+  - [Parse errors](#parse-errors)
+    - [Custom error message](#custom-error-message)
+    - [`parseOrThrow`](#parseorthrow)
+  - [API Reference](#api-reference)
+    - [Base helpers](#base-helpers)
+    - [Sequencing](#sequencing)
+    - [Iteration](#iteration)
+    - [Alternation](#alternation)
+    - [Lazy evaluation](#lazy-evaluation)
+  - [References](#references)
+
+
 ## Installation
 
 Depending on your runtime / package-manager:
@@ -29,9 +64,13 @@ yarn dlx jsr add @fcrozatier/monarch
 
 ## Examples
 
-See the [`/examples`](/examples/) folder for an arithmetic expression
+The [`/examples`](/examples/) folder contains an arithmetic expression
 interpreter, a csv parser, an html parser, as well as common utility parsers (digit, integer,
 number, literal etc.)
+
+## Documentation
+
+
 
 ## Getting Started Guide
 
@@ -208,6 +247,21 @@ resulting value to the variable `p`, then applies the `spaces` parser, binds its
 resulting value to the unused variable `_` and as a result of the sequence
 returns `p`, effectively discarding the trailing spaces.
 
+### `skip`
+
+The `skip` method is a convenient shorthand when you need to skip the result of the next parser. We can rewrite the `token` parser from the previous section as follows:
+
+```ts
+/**
+ * Discards the trailing spaces after a given parser
+ */
+const token = <T>(parser: Parser<T>) =>
+  parser.bind((p) => spaces.bind((_) => result(p)));
+
+// Equivalent
+const token = <T>(parser: Parser<T>) => parser.skip(spaces);
+```
+
 ### `first` and `any`
 
 When many parses are possible you can use the `any` combinator. Most of the time
@@ -345,6 +399,8 @@ even.parseOrThrow("ab");
 ```
 
 ## API Reference
+
+The interactive documentation can be found [here](https://jsr.io/@fcrozatier/monarch/doc)
 
 Common parsers can be found in the `/examples/common.ts` module
 
