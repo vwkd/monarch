@@ -3,8 +3,13 @@ export {
   fragments,
   html,
   Kind,
+  type MCommentNode,
   type MElement,
   type MFragment,
+  type MNode,
+  type MSpacesAndComments,
+  type MTextNode,
+  type SerializationOptions,
   serializeFragments,
   shadowRoot,
 } from "../examples/html.ts";

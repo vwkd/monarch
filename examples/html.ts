@@ -11,22 +11,30 @@ import {
 } from "@fcrozatier/monarch";
 import { literal, regex, whitespace, whitespaces } from "./common.ts";
 
-type MCommentNode = {
+/**
+ * A comment node
+ */
+export type MCommentNode = {
   kind: "COMMENT";
   text: string;
 };
 
-type MSpacesAndComments = (MTextNode | MCommentNode)[];
-
-type MTextNode = {
+/**
+ * A text node
+ */
+export type MTextNode = {
   kind: "TEXT";
   text: string;
 };
 
-type MNode = MCommentNode | MTextNode | MElement;
+/**
+ * An alternation of comments and whitespaces text nodes
+ */
+export type MSpacesAndComments = (MTextNode | MCommentNode)[];
 
-export type MFragment = MNode[];
-
+/**
+ * Element node
+ */
 export type MElement = {
   tagName: string;
   kind: keyof typeof Kind;
@@ -34,6 +42,16 @@ export type MElement = {
   parent?: MElement;
   children?: MFragment;
 };
+
+/**
+ * A node
+ */
+export type MNode = MCommentNode | MTextNode | MElement;
+
+/**
+ * Fragment node
+ */
+export type MFragment = MNode[];
 
 export const textNode = (
   text: string,
@@ -269,7 +287,10 @@ export const html: Parser<
     comments3.filter((c) => c.kind === "COMMENT"),
   ]);
 
-type SerializationOptions = { removeComments?: boolean };
+/**
+ * The monarch serialization options
+ */
+export type SerializationOptions = { removeComments?: boolean };
 
 export const serializeNode = (
   node: MNode,
@@ -313,7 +334,7 @@ export const serializeFragments = (
 };
 
 /**
- * The different types of elements
+ * The different types of HTML elements
  */
 export const Kind = {
   VOID: "VOID",
@@ -353,6 +374,9 @@ const voidElements = [
 const rawTextElements = ["script", "style"];
 const escapableRawTextElements = ["textarea", "title"];
 
+/**
+ * All the HTML boolean attributes
+ */
 export const booleanAttributes = [
   "allowfullscreen", // on <iframe>
   "async", // on <script>
