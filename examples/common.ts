@@ -84,11 +84,20 @@ export const takeTwo: Parser<string> = repeat(take, 2).map((arr) =>
 ).error(parseErrors.takeTwoError);
 
 /**
+ * Parses a single white space
+ *
+ * Regex: /\s\/
+ */
+export const whitespace: Parser<string> = regex(/^\s/).error(
+  "Expected a white space character",
+);
+
+/**
  * Parses white space (0 or more)
  *
  * Regex: /\s*\/
  */
-export const whitespace: Parser<string> = regex(/^\s*/);
+export const whitespaces: Parser<string> = regex(/^\s*/);
 
 /**
  * Parses the space character (0 or more)
@@ -99,13 +108,6 @@ export const spaces: Parser<string> = regex(/^ */);
  * Parses the newline character
  */
 export const newline: Parser<string> = regex(/^\n/);
-
-/**
- * Discards trailing spaces
- */
-export function trimEnd<T>(parser: Parser<T>): Parser<T> {
-  return parser.skip(whitespace);
-}
 
 /**
  * Parses a given string
@@ -134,18 +136,11 @@ export function literal(value: string): Parser<string> {
 }
 
 /**
- * Parses a keyword and discards trailing spaces
- * Alias: token
- */
-export const keyword: (value: string) => Parser<string> = (value: string) =>
-  trimEnd(literal(value));
-
-/**
  * Parses a token and discards trailing spaces
  * Alias: keyword
  */
 export function token(value: string): Parser<string> {
-  return trimEnd(literal(value));
+  return literal(value).skip(whitespaces);
 }
 
 /**
