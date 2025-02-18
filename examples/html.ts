@@ -56,18 +56,17 @@ export type MFragment = MNode[];
 /**
  * Helper function to create a text node
  */
-export const textNode = (
-  text: string,
-) => ({ kind: "TEXT", text } satisfies MTextNode);
+export const textNode = (text: string): MTextNode => ({ kind: "TEXT", text });
 
 const whitespaceOnlyText = whitespaces.map(textNode);
 
 /**
  * Helper function to create a comment node
  */
-export const commentNode = (
-  text: string,
-) => ({ kind: "COMMENT", text } satisfies MCommentNode);
+export const commentNode = (text: string): MCommentNode => ({
+  kind: "COMMENT",
+  text,
+});
 
 /**
  * Parses an HTML comment
