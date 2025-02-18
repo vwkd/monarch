@@ -53,12 +53,18 @@ export type MNode = MCommentNode | MTextNode | MElement;
  */
 export type MFragment = MNode[];
 
+/**
+ * Helper function to create a text node
+ */
 export const textNode = (
   text: string,
 ) => ({ kind: "TEXT", text } satisfies MTextNode);
 
 const whitespaceOnlyText = whitespaces.map(textNode);
 
+/**
+ * Helper function to create a comment node
+ */
 export const commentNode = (
   text: string,
 ) => ({ kind: "COMMENT", text } satisfies MCommentNode);
@@ -66,7 +72,7 @@ export const commentNode = (
 /**
  * Parses an HTML comment
  *
- * @ref https://html.spec.whatwg.org/#comments
+ * https://html.spec.whatwg.org/#comments
  */
 export const comment: Parser<MCommentNode> = bracket(
   literal("<!--"),
@@ -88,7 +94,7 @@ export const spacesAndComments: Parser<MSpacesAndComments> = sequence(
 /**
  * Parses a modern HTML doctype
  *
- * @ref https://html.spec.whatwg.org/#syntax-doctype
+ * https://html.spec.whatwg.org/#syntax-doctype
  */
 export const doctype: Parser<string> = sequence([
   regex(/^<!DOCTYPE/i),
@@ -104,7 +110,7 @@ const rawText = regex(/^[^<]+/).map(textNode);
 /**
  * Parses an HTML attribute name
  *
- * @ref https://html.spec.whatwg.org/#attributes-2
+ * https://html.spec.whatwg.org/#attributes-2
  */
 const attributeName = regex(/^[^\s="'>\/\p{Noncharacter_Code_Point}]+/u)
   .skip(whitespaces)
@@ -148,6 +154,9 @@ const startTag: Parser<
   return result({ tagName, attributes });
 });
 
+/**
+ * The element parser
+ */
 export const element: Parser<MElement> = createParser((input, position) => {
   const openTag = startTag.parse(input, position);
 
@@ -224,44 +233,52 @@ export const element: Parser<MElement> = createParser((input, position) => {
   };
 });
 
-export const fragments: Parser<MNode[]> = many(
-  first<MNode>(element, comment, rawText),
+/**
+ * The fragments parser
+ */
+export const fragments: Parser<MFragment> = many(
+  first<MNode>(rawText, element, comment),
 );
 
-export const shadowRoot: Parser<readonly [MSpacesAndComments, MElement]> =
-  createParser(
-    (input, position) => {
-      const result = sequence([
-        spacesAndComments,
-        element,
-      ]).parse(input, position);
+/**
+ * Parses a template element with declarative shadow root and returns a fragment
+ */
+export const shadowRoot: Parser<MFragment> = createParser(
+  (input, position) => {
+    const result = sequence([
+      spacesAndComments,
+      element,
+    ]).map(([comments, element]) => [...comments, element]).parse(
+      input,
+      position,
+    );
 
-      if (!result.success) return result;
+    if (!result.success) return result;
 
-      const maybeTemplate = result.results[0].value[1];
-      if (maybeTemplate.tagName !== "template") {
-        return {
-          success: false,
-          message: "Expected a template element",
-          position,
-        };
-      }
+    const maybeTemplate = result.results[0].value.at(-1) as MElement;
+    if (maybeTemplate.tagName !== "template") {
+      return {
+        success: false,
+        message: "Expected a template element",
+        position,
+      };
+    }
 
-      if (
-        !maybeTemplate.attributes.find(([k, v]) =>
-          k === "shadowrootmode" && v === "open"
-        )
-      ) {
-        return {
-          success: false,
-          message: "Expected a declarative shadow root",
-          position,
-        };
-      }
+    if (
+      !maybeTemplate.attributes.find(([k, v]) =>
+        k === "shadowrootmode" && v === "open"
+      )
+    ) {
+      return {
+        success: false,
+        message: "Expected a declarative shadow root",
+        position,
+      };
+    }
 
-      return result;
-    },
-  );
+    return result;
+  },
+);
 
 /**
  * Parses an html document: a doctype and an html element maybe surrounded by whitespace and comments
@@ -290,8 +307,16 @@ export const html: Parser<
 /**
  * The monarch serialization options
  */
-export type SerializationOptions = { removeComments?: boolean };
+export type SerializationOptions = {
+  /**
+   * Whether comments should be included in the serialization
+   */
+  removeComments?: boolean;
+};
 
+/**
+ * Serializes a single node
+ */
 export const serializeNode = (
   node: MNode,
   options?: SerializationOptions,
@@ -326,6 +351,9 @@ export const serializeNode = (
   return `${startTag}${content}</${node.tagName}>`;
 };
 
+/**
+ * Serializes a fragment
+ */
 export const serializeFragments = (
   fragment: MFragment,
   options?: SerializationOptions,

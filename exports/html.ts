@@ -1,5 +1,6 @@
 export {
   booleanAttributes,
+  commentNode,
   fragments,
   html,
   Kind,
@@ -11,5 +12,7 @@ export {
   type MTextNode,
   type SerializationOptions,
   serializeFragments,
+  serializeNode,
   shadowRoot,
+  textNode,
 } from "../examples/html.ts";
