@@ -308,7 +308,7 @@ export const serializeNode = (
 export const serializeFragments = (
   fragment: MFragment,
   options?: SerializationOptions,
-) => {
+): string => {
   return fragment.map((node) => serializeNode(node, options)).join("");
 };
 
