@@ -8,10 +8,10 @@ import {
   alt,
   bracket,
   createParser,
-  many,
+  many0,
   type Parser,
   result,
-  sepBy,
+  sepBy0,
   sequence,
   zero,
 } from "@fcrozatier/monarch";
@@ -91,7 +91,7 @@ export const comment: Parser<MCommentNode> = bracket(
 export const spacesAndComments: Parser<MSpacesAndComments> = sequence(
   [
     whitespaceOnlyText,
-    sepBy(comment, whitespaces),
+    sepBy0(comment, whitespaces),
     whitespaceOnlyText,
   ],
 ).map(([space1, comments, space2]) => [space1, ...comments, space2]);
@@ -155,7 +155,7 @@ const startTag: Parser<
 > = sequence([
   literal("<"),
   tagName,
-  many(attribute),
+  many0(attribute),
   regex(/\/?>/),
 ]).error("Expected a start tag").bind(([_, tagName, attributes, end]) => {
   const selfClosing = end === "/>";
@@ -248,7 +248,7 @@ export const element: Parser<MElement> = createParser((input, position) => {
 /**
  * The fragments parser
  */
-export const fragments: Parser<MFragment> = many(
+export const fragments: Parser<MFragment> = many0(
   alt<MNode>(rawText, element, comment),
 );
 

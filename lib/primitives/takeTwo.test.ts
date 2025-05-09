@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { any, many, take, takeTwo } from "../main.ts";
+import { any, many0, take, takeTwo } from "../main.ts";
 import { parseErrors } from "../../src/errors.ts";
 
 Deno.test("two items", () => {
@@ -21,7 +21,7 @@ Deno.test("two items", () => {
 
 // Explore a search space
 const oneOrTwoItems = any(take, takeTwo);
-const explore = many(oneOrTwoItems);
+const explore = many0(oneOrTwoItems);
 
 Deno.test("explore", () => {
   assertEquals(explore.parse("many"), {

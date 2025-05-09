@@ -166,12 +166,12 @@ const { message } = even.parse("ab"); // "Expected an even number"
 ### `many`
 
 To apply a given parser as many times as possible (0 or more), wrap it with the
-`many<T>(parser: Parser<T>): Parser<T[]>` combinator. To apply the given parser
+`many0<T>(parser: Parser<T>): Parser<T[]>` combinator. To apply the given parser
 1 or more times, use `many1`. Its success return value is an array of `T` values
 
 ```js
 const digit = regex(/^\d/);
-const { results } = many(digit).parse("23 and more"); // [{value: ["2", "3"], remaining: " and more", ...}]
+const { results } = many0(digit).parse("23 and more"); // [{value: ["2", "3"], remaining: " and more", ...}]
 ```
 
 ### `map`
@@ -184,7 +184,7 @@ value
 const digit = regex(/^\d/).map(Number.parseInt);
 const { results } = digit.parse("23 and more"); // [{value: 2, remaining: "3 and more", ...}]
 
-const natural = many(digit).map((arr) => Number(arr.join("")));
+const natural = many0(digit).map((arr) => Number(arr.join("")));
 const { results } = natural.parse("23 and more"); // [{value: 23, remaining: " and more", ...}]
 ```
 
@@ -214,7 +214,7 @@ sequence with a final value lifted as a parser.
 
 ```ts
 const letter = regex(/^[a-zA-Z]/);
-const alphanumeric = many(regex(/^\w/)); // Parser<string[]>
+const alphanumeric = many0(regex(/^\w/)); // Parser<string[]>
 const identifier = letter.bind((l) =>
   alphanumeric.map((rest) => [l, ...rest].join(""))
 );
@@ -285,13 +285,13 @@ interested in the result of the first matching alternative
 
 It's common to have a pattern of tokens separated by a separator that should be
 discarded. In these situations you can use
-`sepBy<T, U>(parser: Parser<T>, separator: Parser<U>): Parser<T[]>` to recognize
-such sequences and `sepBy1` for non-empty sequences
+`sepBy0<T, U>(parser: Parser<T>, separator: Parser<U>): Parser<T[]>` to
+recognize such sequences and `sepBy1` for non-empty sequences
 
 ```ts
 const listOfNumbers = bracket(
   literal("["),
-  sepBy(number, literal(",")),
+  sepBy0(number, literal(",")),
   literal("]"),
 );
 
@@ -360,7 +360,7 @@ directly referencing `expr` which is not yet defined.
 ### `iterate`
 
 The `iterate<T>(parser: T): Parser<T[]>` combinator applies a given parser many
-times, like the `many` combinator, but returns all the intermediate results.
+times, like the `many0` combinator, but returns all the intermediate results.
 
 ```ts
 iterate(digit).parse("42"); // results: [{value: [4, 2], remaining: ""}, {value: [4], remaining: "2"}, {value: [], remaining: "42"}]
@@ -412,10 +412,10 @@ even.parseOrThrow("ab");
 
 - iterate: Returns an array of all iterated parses
 - repeat: Repeats a parser a fixed number of times
-- many: Returns the longest matching parse array (0 or more matches)
+- many0: Returns the longest matching parse array (0 or more matches)
 - many1: Returns the longest matching parse array (1 or more matches)
-- sepBy: Recognizes sequences (maybe empty) of a given parser and separator, and
-  ignores the separator
+- sepBy0: Recognizes sequences (maybe empty) of a given parser and separator,
+  and ignores the separator
 - sepBy1: Recognizes non-empty sequences of a given parser and separator, and
   ignores the separator
 - foldL: Parses maybe-empty sequences of items separated by an operator parser

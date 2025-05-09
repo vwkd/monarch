@@ -1,8 +1,8 @@
 import { assertEquals } from "@std/assert";
-import { digit, many } from "../../main.ts";
+import { digit, many0 } from "../../main.ts";
 
 Deno.test("many", () => {
-  assertEquals(many(digit).parse("23 and more"), {
+  assertEquals(many0(digit).parse("23 and more"), {
     success: true,
     results: [{
       value: [2, 3],
@@ -12,7 +12,7 @@ Deno.test("many", () => {
   });
 
   // Matches 0 or more times
-  assertEquals(many(digit).parse("a"), {
+  assertEquals(many0(digit).parse("a"), {
     success: true,
     results: [{
       value: [],
