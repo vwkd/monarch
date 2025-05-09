@@ -273,7 +273,7 @@ export const result = <T>(value: T): Parser<T> => {
  *
  * It is the unit of alternation and plus, and also is an absorbing element of bind
  */
-export const zero: Parser<any> = createParser((_, position) => ({
+export const zero: Parser<never> = createParser((_, position) => ({
   success: false,
   message: "",
   position,
@@ -308,7 +308,7 @@ type Unpack<T> = {
  *
  * @see {@linkcode bracket}
  */
-export const sequence = <const A extends readonly Parser<any>[]>(
+export const sequence = <const A extends readonly Parser<unknown>[]>(
   parsers: A,
   acc = [] as Unpack<A>,
 ): Parser<Unpack<A>> => {
