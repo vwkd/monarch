@@ -4,7 +4,14 @@
  * @module
  */
 
-import { alt, bracket, foldL1, foldR1, lazy, type Parser } from "../index.ts";
+import {
+  alt,
+  bracket,
+  foldL1,
+  foldR1,
+  lazy,
+  type Parser,
+} from "../src/index.ts";
 import { literal, number } from "./common.ts";
 
 const addOp = alt(
