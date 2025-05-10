@@ -16,7 +16,7 @@ import {
   result,
   sequence,
   zero,
-} from "../src/index.ts";
+} from "../src/main.ts";
 
 Deno.test("zero is an absorbing element of bind", () => {
   assertEquals(zero.bind(() => take).parse("m"), zero.parse("m"));

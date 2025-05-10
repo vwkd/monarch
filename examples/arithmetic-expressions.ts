@@ -11,7 +11,7 @@ import {
   foldR1,
   lazy,
   type Parser,
-} from "../src/index.ts";
+} from "../src/main.ts";
 import { literal, number } from "./common.ts";
 
 const addOp = alt(

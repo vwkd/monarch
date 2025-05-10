@@ -11,7 +11,7 @@ import {
   type Parser,
   result,
   sepBy,
-} from "../src/index.ts";
+} from "../src/main.ts";
 import { first, letters, literal, natural, newline, spaces } from "./common.ts";
 
 /**
