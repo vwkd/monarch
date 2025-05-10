@@ -1,20 +1,18 @@
 import { assertEquals, assertIsError, assertThrows } from "@std/assert";
 import { ParseError } from "../src/errors.ts";
 import {
+  any,
   digit,
+  iterate,
   letter,
   literal,
-  number,
-  take,
-  takeTwo,
-} from "../examples/common.ts";
-import {
-  any,
-  iterate,
   many,
   many1,
+  number,
   result,
   sequence,
+  take,
+  takeTwo,
   zero,
 } from "../src/main.ts";
 

@@ -15,7 +15,7 @@ import {
   sequence,
   zero,
 } from "@fcrozatier/monarch";
-import { first, literal, regex, whitespace, whitespaces } from "./common.ts";
+import { first, literal, regex, whitespace, whitespaces } from "../src/main.ts";
 
 /**
  * A comment node

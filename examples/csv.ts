@@ -7,12 +7,17 @@
 import {
   alt,
   bracket,
+  first,
+  letters,
+  literal,
   many1,
+  natural,
+  newline,
   type Parser,
   result,
   sepBy,
+  spaces,
 } from "../src/main.ts";
-import { first, letters, literal, natural, newline, spaces } from "./common.ts";
 
 /**
  * Zips arrays of the same length

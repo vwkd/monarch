@@ -10,9 +10,10 @@ import {
   foldL1,
   foldR1,
   lazy,
+  literal,
+  number,
   type Parser,
 } from "../src/main.ts";
-import { literal, number } from "./common.ts";
 
 const addOp = alt(
   literal("+").map(() => (a: number, b: number) => a + b),
