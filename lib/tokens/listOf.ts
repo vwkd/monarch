@@ -1,4 +1,4 @@
-import type { Parser } from "../../src/index.ts";
+import type { Parser } from "../../src/parser/main.ts";
 import { sepBy } from "../combinators/iteration/sepBy.ts";
 import { bracket } from "../combinators/sequencing/bracket.ts";
 import { token } from "./token.ts";

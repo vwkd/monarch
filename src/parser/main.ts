@@ -1,6 +1,6 @@
-import { ParseError } from "./errors.ts";
-import type { ParseResult, ParsingHandler, Position } from "./types.ts";
-import { sortPosition } from "./utilities.ts";
+import { ParseError } from "../errors.ts";
+import type { ParseResult, ParsingHandler, Position } from "../types.ts";
+import { sortPosition } from "../utilities.ts";
 
 /**
  * The monadic parser class
