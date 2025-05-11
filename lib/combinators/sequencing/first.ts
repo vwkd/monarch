@@ -2,10 +2,9 @@ import type { Parser } from "../../../src/parser/main.ts";
 import { result } from "../../primitives/result.ts";
 
 /**
- * Skips the second parser
+ * Skips all parsers but the first one
  *
- * @param parser The first parser
- * @param skip The second parser
+ * @param parsers The parsers
  * @returns A parser returning the result of the first parser
  *
  * @example Discard trailing spaces
@@ -17,6 +16,15 @@ import { result } from "../../primitives/result.ts";
  * // [{ value: "abc", remaining: "", ... }]
  * ```
  */
-export function first<T, U>(parser: Parser<T>, skip: Parser<U>): Parser<T> {
-  return parser.bind((r) => skip.bind((_) => result(r)));
+export function first<T>(
+  ...parsers: [Parser<T>, Parser<unknown>, ...Parser<unknown>[]]
+): Parser<T> {
+  const [firstParser, ...rest] = parsers;
+  //  return p1.bind((r) => p2.bind((_) => ... => pN.bind((_) => result(r)) ... ));
+  return firstParser.bind((r) =>
+    rest.reduceRight<Parser<T>>(
+      (acc, parser) => parser.bind((_) => acc),
+      result(r),
+    )
+  );
 }
