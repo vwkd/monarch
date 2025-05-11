@@ -3,7 +3,7 @@ import { digit, literal, result, sequence } from "../../main.ts";
 
 Deno.test("sequence", () => {
   assertEquals(
-    sequence([literal("a"), digit]).bind(([str, num]) =>
+    sequence(literal("a"), digit).bind(([str, num]) =>
       result(str.toUpperCase() + `${num * 100}`)
     ).parse("a3"),
     {

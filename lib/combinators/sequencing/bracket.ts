@@ -22,7 +22,7 @@ export function bracket<T, U, V>(
   body: Parser<U>,
   closeBracket: Parser<V>,
 ): Parser<U> {
-  return sequence([openBracket, body, closeBracket]).bind((arr) =>
+  return sequence(openBracket, body, closeBracket).bind((arr) =>
     result(arr[1])
   );
 }
