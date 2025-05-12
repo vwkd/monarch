@@ -1,13 +1,22 @@
 import { createParser, type Parser } from "../../src/parser/main.ts";
 
 /**
- * The default embedding of a value in the Parser context
+ * A parser that always succeeds
  *
- * Succeeds without consuming any of the input string
+ * - doesn't consume any input
+ *
+ * @param value The value the parser succeeds with
+ * @returns A parser returning the value
  */
 export const result = <T>(value: T): Parser<T> => {
-  return createParser((
-    remaining,
-    position,
-  ) => ({ success: true, results: [{ value, remaining, position }] }));
+  return createParser((input, position) => ({
+    success: true,
+    results: [
+      {
+        value,
+        remaining: input,
+        position,
+      },
+    ],
+  }));
 };
