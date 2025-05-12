@@ -3,6 +3,13 @@ import type { ParseResult, ParsingHandler, Position } from "../types.ts";
 import { sortPosition } from "../utilities.ts";
 
 /**
+ * Utility to create a new parser
+ */
+export const createParser = <T>(
+  fn: ParsingHandler<T>,
+): Parser<T> => new Parser(fn);
+
+/**
  * The monadic parser class
  */
 export class Parser<T> {
@@ -196,10 +203,3 @@ export class Parser<T> {
     return this;
   }
 }
-
-/**
- * Utility to create a new parser
- */
-export const createParser = <T>(
-  fn: ParsingHandler<T>,
-): Parser<T> => new Parser(fn);
