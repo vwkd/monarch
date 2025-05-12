@@ -5,30 +5,53 @@ import { parseErrors } from "../../../src/errors.ts";
 const takeTwo = repeat(take, 2).map((tokens) => tokens.join("")).error(
   "Expected two characters",
 );
-const oneOrTwoItems = all(take, takeTwo);
+const oneOrTwo = all(take, takeTwo);
 
-Deno.test("alternation", () => {
-  assertEquals(oneOrTwoItems.parse(""), {
+Deno.test("abc", () => {
+  assertEquals(oneOrTwo.parse("abc"), {
+    success: true,
+    results: [{
+      value: "a",
+      remaining: "bc",
+      position: { line: 1, column: 1 },
+    }, {
+      value: "ab",
+      remaining: "c",
+      position: { line: 1, column: 2 },
+    }],
+  });
+});
+
+Deno.test("ab", () => {
+  assertEquals(oneOrTwo.parse("ab"), {
+    success: true,
+    results: [{
+      value: "a",
+      remaining: "b",
+      position: { line: 1, column: 1 },
+    }, {
+      value: "ab",
+      remaining: "",
+      position: { line: 1, column: 2 },
+    }],
+  });
+});
+
+Deno.test("a", () => {
+  assertEquals(oneOrTwo.parse("a"), {
+    success: true,
+    results: [{
+      value: "a",
+      remaining: "",
+      position: { line: 1, column: 1 },
+    }],
+  });
+});
+
+Deno.test("empty string", () => {
+  assertEquals(oneOrTwo.parse(""), {
     success: false,
     position: { line: 1, column: 0 },
     message: parseErrors.takeError,
-  });
-
-  assertEquals(oneOrTwoItems.parse("m"), {
-    success: true,
-    results: [{ value: "m", remaining: "", position: { line: 1, column: 1 } }],
-  });
-
-  assertEquals(oneOrTwoItems.parse("monad"), {
-    success: true,
-    results: [{
-      value: "m",
-      remaining: "onad",
-      position: { line: 1, column: 1 },
-    }, {
-      value: "mo",
-      remaining: "nad",
-      position: { line: 1, column: 2 },
-    }],
   });
 });
