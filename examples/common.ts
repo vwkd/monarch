@@ -1,15 +1,15 @@
 import { parseErrors } from "../errors.ts";
 import {
+  and,
   bracket,
   createParser,
-  first,
   foldL1,
   many,
+  or,
   type Parser,
   repeat,
   result,
   sepBy,
-  sequence,
   updatePosition,
 } from "../index.ts";
 
@@ -144,7 +144,7 @@ export const defaulted = <T>(
   parser: Parser<T>,
   value: T,
 ): Parser<T> => {
-  return first(parser, result(value));
+  return or(parser, result(value));
 };
 
 /**
@@ -306,7 +306,7 @@ export const natural: Parser<number> = foldL1(
 /**
  * Parses an integer (element of ℤ)
  */
-export const integer: Parser<number> = first(
+export const integer: Parser<number> = or(
   literal("-").bind(() => natural).map((x) => -x),
   literal("+").bind(() => natural).map((x) => x),
   natural,
@@ -315,7 +315,7 @@ export const integer: Parser<number> = first(
 /**
  * Parses a decimal number aka a float
  */
-export const decimal: Parser<number> = sequence([
+export const decimal: Parser<number> = and([
   integer,
   literal("."),
   natural,
@@ -328,7 +328,7 @@ export const decimal: Parser<number> = sequence([
 /**
  * Parses a number as decimal | integer
  */
-export const number: Parser<number> = first(decimal, integer).error(
+export const number: Parser<number> = or(decimal, integer).error(
   parseErrors.number,
 );
 

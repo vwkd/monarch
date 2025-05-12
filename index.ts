@@ -298,7 +298,7 @@ type Unpack<T> = {
  * @example Reimplementing the `bracket` parser
  *
  * ```ts
- * const parenthesizedNumber = sequence([literal("("), natural, literal(")")]);
+ * const parenthesizedNumber = and([literal("("), natural, literal(")")]);
  * // inferred type: Parser<[string, number, string]>
  *
  * const extract: Parser<number> = parenthesizedNumber.map((arr) => arr[1]);
@@ -308,14 +308,14 @@ type Unpack<T> = {
  *
  * @see {@linkcode bracket}
  */
-export const sequence = <const A extends readonly Parser<unknown>[]>(
+export const and = <const A extends readonly Parser<unknown>[]>(
   parsers: A,
   acc = [] as Unpack<A>,
 ): Parser<Unpack<A>> => {
   if (parsers.length > 0) {
     // @ts-ignore existential types
     return parsers[0].bind((x) => {
-      return sequence(parsers.slice(1), [...acc, x]);
+      return and(parsers.slice(1), [...acc, x]);
     }).bind((arr) => result(arr));
   }
   return result(acc);
@@ -341,9 +341,7 @@ export function bracket<T, U, V>(
   body: Parser<U>,
   closeBracket: Parser<V>,
 ): Parser<U> {
-  return sequence([openBracket, body, closeBracket]).bind((arr) =>
-    result(arr[1])
-  );
+  return and([openBracket, body, closeBracket]).bind((arr) => result(arr[1]));
 }
 
 // Alternation
@@ -380,7 +378,7 @@ export const any = <T>(...parsers: Parser<T>[]): Parser<T> => {
  * @example Signed integers
  *
  * ```ts
- * const integer = first(
+ * const integer = or(
  *   literal("-").bind(() => natural).map((x) => -x),
  *   literal("+").bind(() => natural).map((x) => x),
  *   natural,
@@ -391,7 +389,7 @@ export const any = <T>(...parsers: Parser<T>[]): Parser<T> => {
  * integer.parse("42"); // results: [{value: 42, remaining: ''}]
  * ```
  */
-export const first = <T>(
+export const or = <T>(
   ...parsers: Parser<T>[]
 ): Parser<T> => {
   return createParser((input, position) => {
@@ -438,7 +436,7 @@ export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
  * ```
  */
 export const many = <T>(parser: Parser<T>): Parser<T[]> => {
-  return first(
+  return or(
     parser.bind((a) => many(parser).bind((x) => result([a, ...x]))),
     result([]),
   );
@@ -502,7 +500,7 @@ export const sepBy = <T, U>(
   parser: Parser<T>,
   sep: Parser<U>,
 ): Parser<T[]> => {
-  return first(sepBy1(parser, sep), result([]));
+  return or(sepBy1(parser, sep), result([]));
 };
 
 /**
@@ -526,7 +524,7 @@ export const foldL1 = <T, U extends (a: T, b: T) => T>(
   operator: Parser<U>,
 ): Parser<T> => {
   const rest = (x: T): Parser<T> => {
-    return first(
+    return or(
       operator.bind((f) => item.bind((y) => rest(f(x, y)))),
       result(x),
     );
@@ -554,7 +552,7 @@ export const foldL = <T, U extends (a: T, b: T) => T>(
   item: Parser<T>,
   operator: Parser<U>,
 ): Parser<T> => {
-  return first(foldL1(item, operator), item);
+  return or(foldL1(item, operator), item);
 };
 
 /**
@@ -567,7 +565,7 @@ export const foldR1 = <T, U extends (a: T, b: T) => T>(
   operator: Parser<U>,
 ): Parser<T> => {
   return item.bind((x) => {
-    return first(
+    return or(
       operator.bind((f) => foldR1(item, operator).bind((y) => result(f(x, y)))),
       result(x),
     );
@@ -595,7 +593,7 @@ export const foldR = <T, U extends (a: T, b: T) => T>(
   item: Parser<T>,
   operator: Parser<U>,
 ): Parser<T> => {
-  return first(foldR1(item, operator), item);
+  return or(foldR1(item, operator), item);
 };
 
 // Filtering
@@ -676,7 +674,7 @@ allows us to lazily evaluate this parser definition to avoid directly referencin
  *
  * // integer | (expr)
  * const factor = lazy(() =>
- *   first(
+ *   or(
  *     integer,
  *     bracket(
  *       literal("("),
