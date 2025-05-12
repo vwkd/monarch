@@ -1,7 +1,6 @@
 import type { Parser } from "../../../src/parser/main.ts";
 import { result } from "../../primitives/result.ts";
 import { fail } from "../../primitives/fail.ts";
-import { defaulted } from "../choice/defaulted.ts";
 
 /**
  * Recursive helper for `many`
@@ -29,7 +28,7 @@ const manyRecursive = <T>(
   );
 
   if (count >= min) {
-    return defaulted(rest, acc);
+    return rest.default(acc);
   } else {
     return rest;
   }

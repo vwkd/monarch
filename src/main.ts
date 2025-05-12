@@ -6,7 +6,6 @@ export {
   and,
   bracket,
   decimal,
-  defaulted,
   digit,
   fail,
   filter,

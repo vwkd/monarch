@@ -1,7 +1,6 @@
 import type { Parser } from "../../../src/parser/main.ts";
 import { result } from "../../primitives/result.ts";
 import { fail } from "../../primitives/fail.ts";
-import { defaulted } from "../choice/defaulted.ts";
 import { many } from "./many.ts";
 
 /**
@@ -48,15 +47,11 @@ export const sepBy = <T, U>(
   const separatorItems = many(separatorItem, minRemaining, maxRemaining);
 
   if (min === 0) {
-    return defaulted(
-      parser.chain((firstItem) =>
-        separatorItems.map((rest) => [firstItem, ...rest])
-      ),
-      [],
-    );
+    return parser
+      .chain((firstItem) => separatorItems.map((rest) => [firstItem, ...rest]))
+      .default([]);
   } else {
-    return parser.chain((firstItem) =>
-      separatorItems.map((rest) => [firstItem, ...rest])
-    );
+    return parser
+      .chain((firstItem) => separatorItems.map((rest) => [firstItem, ...rest]));
   }
 };

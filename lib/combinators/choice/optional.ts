@@ -1,12 +1,13 @@
-import type { Parser } from "../../../src/parser/main.ts";
-import { defaulted } from "./defaulted.ts";
+import { createParser, type Parser } from "../../../src/parser/main.ts";
 
 /**
- * Tries a parser or defaults to `undefined`.
- * @param parser The parser.
- * @returns A parser returning the successful parse result or `undefined`.
+ * Tries a parser or defaults to `undefined`
+ *
+ * @param parser The parser
+ * @returns A parser returning the successful parse result or `undefined`
  *
  * @example
+ *
  * ```ts
  * const number = optional(digit);
  *
@@ -16,5 +17,22 @@ import { defaulted } from "./defaulted.ts";
  * // [{ value: undefined, remaining: "abc", ... }]
  */
 export const optional = <T>(parser: Parser<T>): Parser<T | undefined> => {
-  return defaulted(parser, undefined);
+  return createParser<T | undefined>((input, position) => {
+    const result = parser.parse(input, position);
+
+    if (result.success) {
+      return result;
+    }
+
+    return {
+      success: true,
+      results: [
+        {
+          value: undefined,
+          remaining: input,
+          position,
+        },
+      ],
+    };
+  });
 };

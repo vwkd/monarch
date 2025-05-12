@@ -68,6 +68,42 @@ export class Parser<T> {
   }
 
   /**
+   * Defaults to the value if the parser fails
+   *
+   * @param value The default value
+   * @returns A parser returning the successful parse result or the default value
+   *
+   * @example
+   *
+   * ```ts
+   * digit.default(42).parse("123");
+   * // [{ value: 1, remaining: "23", ... }]
+   * digit.default(42).parse("abc");
+   * // [{ value: 42, remaining: "abc", ... }]
+   * ```
+   */
+  default(value: T): Parser<T> {
+    return createParser((input, position) => {
+      const result = this.parse(input, position);
+
+      if (result.success) {
+        return result;
+      }
+
+      return {
+        success: true,
+        results: [
+          {
+            value,
+            remaining: input,
+            position,
+          },
+        ],
+      };
+    });
+  }
+
+  /**
    * Transforms a parser of type T into a parser of type U
    *
    * @example Mapping a `Parser<string>` to a `Parser<number>`
