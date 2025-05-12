@@ -4,7 +4,7 @@ import { sortPosition } from "../../../src/utilities.ts";
 /**
  * Returns all matching parses
  */
-export const any = <T>(...parsers: Parser<T>[]): Parser<T> => {
+export const all = <T>(...parsers: Parser<T>[]): Parser<T> => {
   return createParser((input, position) => {
     const results = parsers.map((parser) => parser.parse(input, position));
 

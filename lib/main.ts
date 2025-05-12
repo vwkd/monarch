@@ -2,7 +2,7 @@ export { fail } from "./primitives/fail.ts";
 export { result } from "./primitives/result.ts";
 export { take } from "./primitives/take.ts";
 
-export { any } from "./combinators/alternation/any.ts";
+export { all } from "./combinators/alternation/all.ts";
 export { defaulted } from "./combinators/choice/defaulted.ts";
 export { optional } from "./combinators/choice/optional.ts";
 export { or } from "./combinators/choice/or.ts";

@@ -1,11 +1,11 @@
 import { assertEquals } from "@std/assert";
-import { any, repeat, take } from "../../main.ts";
+import { all, repeat, take } from "../../main.ts";
 import { parseErrors } from "../../../src/errors.ts";
 
 const takeTwo = repeat(take, 2).map((tokens) => tokens.join("")).error(
   "Expected two characters",
 );
-const oneOrTwoItems = any(take, takeTwo);
+const oneOrTwoItems = all(take, takeTwo);
 
 Deno.test("alternation", () => {
   assertEquals(oneOrTwoItems.parse(""), {

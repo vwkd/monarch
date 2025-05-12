@@ -1,9 +1,9 @@
 export { createParser, Parser } from "./parser/main.ts";
 
 export {
+  all,
   alphaNums,
   and,
-  any,
   bracket,
   decimal,
   defaulted,
