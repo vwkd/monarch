@@ -3,12 +3,18 @@ export type Position = {
   column: number;
 };
 
+/**
+ * A failed parse result
+ */
 export type ParseFail = {
   success: false;
   message: string;
   position: Position;
 };
 
+/**
+ * A successful parse result
+ */
 export type ParseSuccess<T> = {
   success: true;
   results: {

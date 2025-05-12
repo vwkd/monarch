@@ -1,15 +1,7 @@
 {
-  "name": "@fcrozatier/monarch",
+  "name": "@vwkd/monarch",
   "version": "2.6.0",
-  "exports": {
-    ".": "./src/main.ts",
-    "./html": "./exports/html.ts",
-    "./csv": "./exports/csv.ts"
-  },
-  "license": "MIT",
-  "tasks": {
-    "coverage": "deno test --coverage && open coverage/html/index.html"
-  },
+  "exports": "./src/main.ts",
   "imports": {
     "@std/assert": "jsr:@std/assert@^1"
   },
