@@ -102,7 +102,7 @@ export class Parser<T> {
    * ```ts
    * const letter = regex(/^[a-zA-Z]/);
    * const alphanumeric = many0(regex(/^\w/)); // Parser<string[]>
-   * const identifier = letter.bind((l) =>
+   * const identifier = letter.chain((l) =>
    *   alphanumeric.map((rest) => [l, ...rest].join(""))
    * );
    *
@@ -114,7 +114,7 @@ export class Parser<T> {
    *
    * ```ts
    * const spaces = regex(/^\s* /);
-   * const token = <T>(parser) => parser.bind((p) => spaces.bind((_) => result(p)));
+   * const token = <T>(parser) => parser.chain((p) => spaces.chain((_) => result(p)));
    *
    * const { results } = token(identifier).parse("ageUser1  = 42");
    * // [{value: "ageUser1", remaining: "= 42", ...}]
@@ -122,7 +122,7 @@ export class Parser<T> {
    *
    * @see {@linkcode first}
    */
-  bind<U>(transform: (value: T) => Parser<U>): Parser<U> {
+  chain<U>(transform: (value: T) => Parser<U>): Parser<U> {
     return createParser((input, position) => {
       const result = this.parse(input, position);
 

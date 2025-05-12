@@ -8,7 +8,7 @@ import { natural } from "./natural.ts";
  * Parses an integer (element of ℤ)
  */
 export const integer: Parser<number> = or(
-  literal("-").bind(() => natural).map((x) => -x),
-  literal("+").bind(() => natural).map((x) => x),
+  literal("-").chain(() => natural).map((x) => -x),
+  literal("+").chain(() => natural).map((x) => x),
   natural,
 ).error(parseErrors.integer);

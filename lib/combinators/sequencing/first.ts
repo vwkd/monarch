@@ -20,10 +20,10 @@ export function first<T>(
   ...parsers: [Parser<T>, Parser<unknown>, ...Parser<unknown>[]]
 ): Parser<T> {
   const [firstParser, ...rest] = parsers;
-  //  return p1.bind((r) => p2.bind((_) => ... => pN.bind((_) => result(r)) ... ));
-  return firstParser.bind((r) =>
+  //  return p1.chain((r) => p2.chain((_) => ... => pN.chain((_) => result(r)) ... ));
+  return firstParser.chain((r) =>
     rest.reduceRight<Parser<T>>(
-      (acc, parser) => parser.bind((_) => acc),
+      (acc, parser) => parser.chain((_) => acc),
       result(r),
     )
   );

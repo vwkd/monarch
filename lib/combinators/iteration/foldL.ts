@@ -45,7 +45,7 @@ export const foldL = <T, O extends (a: T, b: T) => T>(
   const operatorItem = and(operator, parser);
   const operatorItems = many(operatorItem, min - 1, max - 1);
 
-  return parser.bind((firstItem) =>
+  return parser.chain((firstItem) =>
     operatorItems.map((pairs) =>
       pairs.reduce((acc, [op, val]) => op(acc, val), firstItem)
     )

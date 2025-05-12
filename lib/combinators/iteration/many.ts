@@ -24,7 +24,7 @@ const manyRecursive = <T>(
     return result(acc);
   }
 
-  const rest = parser.bind((item) =>
+  const rest = parser.chain((item) =>
     manyRecursive(parser, min, max, count + 1, [...acc, item])
   );
 

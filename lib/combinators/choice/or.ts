@@ -8,8 +8,8 @@ import { sortPosition } from "../../../src/utilities.ts";
  *
  * ```ts
  * const integer = or(
- *   literal("-").bind(() => natural).map((x) => -x),
- *   literal("+").bind(() => natural).map((x) => x),
+ *   literal("-").chain(() => natural).map((x) => -x),
+ *   literal("+").chain(() => natural).map((x) => x),
  *   natural,
  * );
  *

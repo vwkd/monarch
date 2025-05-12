@@ -5,6 +5,6 @@ import { letter } from "./letter.ts";
 /**
  * Parses an identifier token as letter + alphanums
  */
-export const identifier: Parser<string> = letter.bind((l) =>
+export const identifier: Parser<string> = letter.chain((l) =>
   alphaNums.map((rest) => l + rest)
 );

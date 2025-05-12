@@ -20,10 +20,10 @@ import type { UnwrappedTuple } from "../../types.ts";
 export function and<T extends Parser<unknown>[]>(
   ...parsers: [...T]
 ): Parser<UnwrappedTuple<T>> {
-  //  p1.bind((r1) => p2.bind((r2) => ... => pN.bind((rN) => result([r1, r2, ..., rN])) ... ));
+  //  p1.chain((r1) => p2.chain((r2) => ... => pN.chain((rN) => result([r1, r2, ..., rN])) ... ));
   return parsers.reduceRight(
     (acc, parser) =>
-      parser.bind((r) => acc.map((rs) => [r, ...rs] as UnwrappedTuple<T>)),
+      parser.chain((r) => acc.map((rs) => [r, ...rs] as UnwrappedTuple<T>)),
     result([] as UnwrappedTuple<T>),
   );
 }

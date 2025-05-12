@@ -44,18 +44,18 @@ export const sepBy = <T, U>(
 
   const minRemaining = Math.max(0, min - 1);
   const maxRemaining = Math.max(0, max - 1);
-  const separatorItem = separator.bind(() => parser);
+  const separatorItem = separator.chain(() => parser);
   const separatorItems = many(separatorItem, minRemaining, maxRemaining);
 
   if (min === 0) {
     return defaulted(
-      parser.bind((firstItem) =>
+      parser.chain((firstItem) =>
         separatorItems.map((rest) => [firstItem, ...rest])
       ),
       [],
     );
   } else {
-    return parser.bind((firstItem) =>
+    return parser.chain((firstItem) =>
       separatorItems.map((rest) => [firstItem, ...rest])
     );
   }

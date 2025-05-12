@@ -12,6 +12,6 @@ import { result } from "../../primitives/result.ts";
  * ```
  */
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
-  return parser.bind((a) => iterate(parser).bind((x) => result([a, ...x])))
+  return parser.chain((a) => iterate(parser).chain((x) => result([a, ...x])))
     .plus(result([]));
 };

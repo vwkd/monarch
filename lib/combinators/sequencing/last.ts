@@ -22,9 +22,9 @@ export function last<T>(
   const rest = parsers.slice(0, -1) as Parser<unknown>[];
   const lastParser = parsers.at(-1) as Parser<T>;
 
-  // p1.bind((_) => p2.bind((_) => ... => pN.bind((r) => result(r)) ... ));
+  // p1.chain((_) => p2.chain((_) => ... => pN.chain((r) => result(r)) ... ));
   return rest.reduceRight<Parser<T>>(
-    (acc, parser) => parser.bind((_) => acc),
-    lastParser.bind((r) => result(r)),
+    (acc, parser) => parser.chain((_) => acc),
+    lastParser.chain((r) => result(r)),
   );
 }
