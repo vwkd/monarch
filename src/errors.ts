@@ -19,7 +19,6 @@ export class ParseError extends Error {
 }
 
 export const parseErrors = {
-  takeTwoError: "Expected two characters",
   takeError: "Unexpected end of input",
 
   letter: "Expected a letter",

@@ -3,19 +3,21 @@ import { createParser, type Parser } from "../../src/parser/main.ts";
 import { updatePosition } from "../../src/utilities.ts";
 
 /**
- * Consumes the next character of the input and fails if the input is empty.
+ * A parser consuming one token
+ *
+ * @throws ParseError if the input is empty
  *
  * @example Non-empty input
  *
  * ```ts
- * const { results } = take.parse("hello");
- * // [{value: 'h', remaining: 'ello', ...}]
+ * take.parse("abc");
+ * // [{ value: "a", remaining: "bc", ... }]
  * ```
  *
  * @example Empty input
  *
  * ```ts
- * const { message } = take.parse("");
+ * take.parse("");
  * // "Unexpected end of input"
  * ```
  */

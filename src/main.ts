@@ -44,7 +44,6 @@ export {
   sepBy1,
   spaces,
   take,
-  takeTwo,
   token,
   upper,
   whitespace,
