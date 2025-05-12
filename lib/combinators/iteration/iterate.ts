@@ -1,5 +1,6 @@
 import type { Parser } from "../../../src/parser/main.ts";
 import { result } from "../../primitives/result.ts";
+import { all } from "../alternation/all.ts";
 
 /**
  * Returns an array of all iterated parses
@@ -12,6 +13,8 @@ import { result } from "../../primitives/result.ts";
  * ```
  */
 export const iterate = <T>(parser: Parser<T>): Parser<T[]> => {
-  return parser.chain((a) => iterate(parser).chain((x) => result([a, ...x])))
-    .plus(result([]));
+  return all(
+    parser.chain((a) => iterate(parser).chain((x) => result([a, ...x]))),
+    result([]),
+  );
 };
