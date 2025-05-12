@@ -1,6 +1,6 @@
 import type { Parser } from "../../../src/parser/main.ts";
 import { result } from "../../primitives/result.ts";
-import { zero } from "../../primitives/zero.ts";
+import { fail } from "../../primitives/fail.ts";
 import { defaulted } from "../choice/defaulted.ts";
 import { many } from "./many.ts";
 
@@ -33,10 +33,10 @@ export const sepBy = <T, U>(
   max: number = Infinity,
 ): Parser<T[]> => {
   if (min < 0) {
-    return zero.error("sepBy: min cannot be negative");
+    return fail.error("sepBy: min cannot be negative");
   }
   if (max < min) {
-    return zero.error("sepBy: max cannot be less than min");
+    return fail.error("sepBy: max cannot be less than min");
   }
   if (max === 0 && min === 0) {
     return result([]);

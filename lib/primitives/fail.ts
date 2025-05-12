@@ -8,8 +8,8 @@ import { createParser, type Parser } from "../../src/parser/main.ts";
  *
  * @returns A parser returning a default error
  */
-export const zero: Parser<never> = createParser((_, position) => ({
+export const fail: Parser<never> = createParser((_, position) => ({
   success: false,
-  message: "zero: default error",
+  message: "fail: default error",
   position,
 }));

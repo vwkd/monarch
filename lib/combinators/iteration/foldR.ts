@@ -1,5 +1,5 @@
 import type { Parser } from "../../../src/parser/main.ts";
-import { zero } from "../../primitives/zero.ts";
+import { fail } from "../../primitives/fail.ts";
 import { and } from "../sequencing/and.ts";
 import { many } from "./many.ts";
 
@@ -33,10 +33,10 @@ export const foldR = <T, O extends (a: T, b: T) => T>(
   max: number = Infinity,
 ): Parser<T> => {
   if (min < 1) {
-    return zero.error("foldR: min cannot be less than 1");
+    return fail.error("foldR: min cannot be less than 1");
   }
   if (max < min) {
-    return zero.error("foldR: max cannot be less than min");
+    return fail.error("foldR: max cannot be less than min");
   }
   if (min === 1 && max === 1) {
     return parser;

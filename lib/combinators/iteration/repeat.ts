@@ -1,5 +1,5 @@
 import type { Parser } from "../../../src/parser/main.ts";
-import { zero } from "../../primitives/zero.ts";
+import { fail } from "../../primitives/fail.ts";
 import { many } from "./many.ts";
 
 /**
@@ -24,7 +24,7 @@ import { many } from "./many.ts";
  */
 export const repeat = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
   if (times < 0) {
-    return zero.error("repeat: times cannot be negative");
+    return fail.error("repeat: times cannot be negative");
   }
   return many(parser, times, times);
 };

@@ -8,6 +8,7 @@ export {
   decimal,
   defaulted,
   digit,
+  fail,
   filter,
   first,
   foldL,
@@ -49,5 +50,4 @@ export {
   whitespace,
   whitespaces,
   whitespaces1,
-  zero,
 } from "../lib/main.ts";

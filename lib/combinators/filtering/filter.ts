@@ -3,7 +3,7 @@ import { createParser, type Parser } from "../../../src/parser/main.ts";
 /**
  * Filters a parser with a predicate and matches only if the predicate returns true
  *
- * Preserves `zero` and distributes over alternation
+ * Preserves `fail` and distributes over alternation
  *
  * @example
  *
