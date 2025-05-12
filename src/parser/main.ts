@@ -136,59 +136,48 @@ export class Parser<T> {
   }
 
   /**
-   * Monadic sequencing of parsers.
+   * Adds a parser after the parser
    *
-   * Useful when you want more control over the sequencing, for dynamic parsing or context aware parsing where a later parser result depends on the result of a previous parser
+   * - useful for conditional parsing when `and(...).map(...)` are not enough
    *
-   * @example Parse simple identifiers
+   * @param transform A function being passed the results of the parser that returns the next parser
+   * @returns A parser returning all successful results of the next parser, or if all failed the error of the parser that got furthest
    *
-   * ```ts
-   * const letter = regex(/^[a-zA-Z]/);
-   * const alphanumeric = many0(regex(/^\w/)); // Parser<string[]>
-   * const identifier = letter.chain((l) =>
-   *   alphanumeric.map((rest) => [l, ...rest].join(""))
-   * );
-   *
-   * const { results } = identifier.parse("user1 = 'Bob'");
-   * // [{value: "user1", remaining: " = 'Bob'", ...}]
-   * ```
-   *
-   * @example Discard trailing spaces
+   * @example
    *
    * ```ts
-   * const spaces = regex(/^\s* /);
-   * const token = <T>(parser) => parser.chain((p) => spaces.chain((_) => result(p)));
+   * const digit = digit.chain((d) => d === 0 ? letter.map((l) => `${d}${l}`) : result(d));
    *
-   * const { results } = token(identifier).parse("ageUser1  = 42");
-   * // [{value: "ageUser1", remaining: "= 42", ...}]
+   * digit.parse("0ab");
+   * // [{ value: "0a", remaining: "b", ... }]
+   * digit.parse("123");
+   * // [{ value: 1, remaining: "23", ... }]
    * ```
-   *
-   * @see {@linkcode first}
    */
   chain<U>(transform: (value: T) => Parser<U>): Parser<U> {
     return createParser((input, position) => {
       const result = this.parse(input, position);
 
-      if (!result.success) return result;
+      if (!result.success) {
+        return result;
+      }
 
-      const nextResults = result.results.map(
-        ({ position, remaining, value }) => {
-          return transform(value).parse(remaining, position);
-        },
-      );
+      const allResults = result.results
+        .map(({ position, remaining, value }) =>
+          transform(value).parse(remaining, position)
+        );
 
-      if (nextResults.every((r) => r.success === false)) {
-        // Heuristic: return the error message of the most successful parse
-        const error = nextResults.sort((a, b) =>
-          sortPosition(a.position, b.position)
-        )[0];
+      if (allResults.every((r) => r.success === false)) {
+        const error = allResults
+          .sort((a, b) => sortPosition(a.position, b.position))[0];
 
         return error;
       }
 
-      const results = nextResults.filter((r) => r.success === true).flatMap((
-        r,
-      ) => r.results);
+      const results = allResults
+        .filter((r) => r.success === true)
+        .flatMap((r) => r.results);
+
       return {
         success: true,
         results,
