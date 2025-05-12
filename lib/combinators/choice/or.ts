@@ -2,36 +2,38 @@ import { createParser, type Parser } from "../../../src/parser/main.ts";
 import { sortPosition } from "../../../src/utilities.ts";
 
 /**
- * Only returns the first successful parse result
+ * A parser that tries all parsers until one succeeds
  *
- * @example Signed integers
+ * @param parsers The parsers
+ * @returns A parser returning the first successful parse result
+ *
+ * @example Text
  *
  * ```ts
- * const integer = or(
- *   literal("-").chain(() => natural).map((x) => -x),
- *   literal("+").chain(() => natural).map((x) => x),
- *   natural,
- * );
+ * const text = or(digit, letter);
  *
- * integer.parse("-42"); // results: [{value: -42, remaining: ''}]
- * integer.parse("+42"); // results: [{value: 42, remaining: ''}]
- * integer.parse("42"); // results: [{value: 42, remaining: ''}]
+ * text.parse("123abc");
+ * // results: [{ value: 1, remaining: "23abc", ... }]
+ * text.parse("abc123");
+ * // results: [{ value: "a", remaining: "bc123", ... }]
  * ```
  */
-export const or = <T>(
-  ...parsers: Parser<T>[]
-): Parser<T> => {
+export const or = <T>(...parsers: Parser<T>[]): Parser<T> => {
   return createParser((input, position) => {
     const results = [];
+
     for (const parser of parsers) {
       const result = parser.parse(input, position);
-      if (result.success === true) return result;
+
+      if (result.success === true) {
+        return result;
+      }
+
       results.push(result);
     }
 
-    const error = results.sort((a, b) =>
-      sortPosition(a.position, b.position)
-    )[0];
+    const error = results
+      .sort((a, b) => sortPosition(a.position, b.position))[0];
 
     return error;
   });
