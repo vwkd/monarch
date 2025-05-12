@@ -9,7 +9,7 @@ import { and } from "./and.ts";
  * ```ts
  * const listOfNumbers = bracket(
  *   literal("["),
- *   sepBy(number, literal(",")),
+ *   sepBy0(number, literal(",")),
  *   literal("]"),
  * );
  *

@@ -15,7 +15,7 @@ import {
   or,
   type Parser,
   result,
-  sepBy,
+  sepBy0,
   spaces,
 } from "../src/main.ts";
 
@@ -38,7 +38,7 @@ const item = or<string | number>(string, natural);
 /**
  * Parses a csv heading and returns the array of headers
  */
-export const headings: Parser<string[]> = first(sepBy(string, coma), newline);
+export const headings: Parser<string[]> = first(sepBy0(string, coma), newline);
 
 const header: Parser<
   (row: (string | number)[]) => Record<string, string | number>
@@ -51,7 +51,7 @@ const header: Parser<
  * Parses a csv row and returns the items array
  */
 export const row: Parser<(string | number)[]> = first(
-  sepBy(item, coma),
+  sepBy0(item, coma),
   newline,
 );
 const rows = many1(row);

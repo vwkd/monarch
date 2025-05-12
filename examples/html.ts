@@ -8,11 +8,11 @@ import {
   and,
   bracket,
   createParser,
-  many,
+  many0,
   or,
   type Parser,
   result,
-  sepBy,
+  sepBy0,
   zero,
 } from "@fcrozatier/monarch";
 import { first, literal, regex, whitespace, whitespaces } from "../src/main.ts";
@@ -91,7 +91,7 @@ export const comment: Parser<MCommentNode> = bracket(
 export const spacesAndComments: Parser<MSpacesAndComments> = and(
   [
     whitespaceOnlyText,
-    sepBy(comment, whitespaces),
+    sepBy0(comment, whitespaces),
     whitespaceOnlyText,
   ],
 ).map(([space1, comments, space2]) => [space1, ...comments, space2]);
@@ -155,7 +155,7 @@ const startTag: Parser<
 > = and([
   literal("<"),
   tagName,
-  many(attribute),
+  many0(attribute),
   regex(/\/?>/),
 ]).error("Expected a start tag").bind(([_, tagName, attributes, end]) => {
   const selfClosing = end === "/>";
@@ -248,7 +248,7 @@ export const element: Parser<MElement> = createParser((input, position) => {
 /**
  * The fragments parser
  */
-export const fragments: Parser<MFragment> = many(
+export const fragments: Parser<MFragment> = many0(
   or<MNode>(rawText, element, comment),
 );
 

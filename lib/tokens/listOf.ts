@@ -1,5 +1,5 @@
 import type { Parser } from "../../src/parser/main.ts";
-import { sepBy } from "../combinators/iteration/sepBy.ts";
+import { sepBy0 } from "../combinators/iteration/sepBy0.ts";
 import { bracket } from "../combinators/sequencing/bracket.ts";
 import { token } from "./token.ts";
 
@@ -9,7 +9,7 @@ import { token } from "./token.ts";
 export function listOf<T>(parser: Parser<T>): Parser<T[]> {
   return bracket(
     token("["),
-    sepBy(parser, token(",")),
+    sepBy0(parser, token(",")),
     token("]"),
   );
 }

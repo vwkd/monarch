@@ -1,32 +1,24 @@
 import type { Parser } from "../../../src/parser/main.ts";
-import { result } from "../../primitives/result.ts";
-import { or } from "../choice/or.ts";
+import { foldL } from "./foldL.ts";
 
 /**
- * Parses non-empty sequences of items separated by an operator parser that associates to the left and performs the fold
+ * Repeats an item parser and a left-associative operator parser greedily 1 or more times, inclusive. Alias for `foldL(itemParser, operatorParser, 1)`
  *
- * @example Slick natural number parser implementation
- *
- * We revisit the `natural` parser as a sequence of digits that are combined together
-by folding a binary operator around the digits.
+ * @example Addition
  *
  * ```ts
- * const natural = foldL1(digit, result((a: number, b: number) => 10 * a + b));
+ * const plus = literal("+").map(() => (a: number, b: number) => a + b);
+ * const addition = foldL1(digit, plus);
  *
- * natural.parse("123"); // results: [{value: 123, remaining: ""}]
+ * addition.parse("1+2+3+a+b+c");
+ * // results: [{ value: 6, remaining: "+a+b+c" } ]
+ * addition.parse("1");
+ * // results: [{ value: 1, remaining: "" } ]
  * ```
  *
  * @see {@linkcode foldL}
  */
-export const foldL1 = <T, U extends (a: T, b: T) => T>(
-  item: Parser<T>,
-  operator: Parser<U>,
-): Parser<T> => {
-  const rest = (x: T): Parser<T> => {
-    return or(
-      operator.bind((f) => item.bind((y) => rest(f(x, y)))),
-      result(x),
-    );
-  };
-  return item.bind(rest);
-};
+export const foldL1 = <T, O extends (a: T, b: T) => T>(
+  parser: Parser<T>,
+  operator: Parser<O>,
+): Parser<T> => foldL(parser, operator, 1);
