@@ -1,7 +1,7 @@
 import type { Predicate } from "../types.ts";
 
 /**
- * Returns a predicate function from a regex that can be used with the {@linkcode filter} combinator.
+ * Returns a predicate function from a regex that can be used with the {@linkcode filter} combinator
  *
  * Prefer using the {@linkcode regex} parser for filter string parsers
  *
