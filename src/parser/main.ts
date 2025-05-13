@@ -104,33 +104,37 @@ export class Parser<T> {
   }
 
   /**
-   * Transforms a parser of type T into a parser of type U
+   * Transforms the value of the parser
    *
-   * @example Mapping a `Parser<string>` to a `Parser<number>`
+   * @param transform A function being passed the results of the parser that returns the new value
+   * @returns A parser returning the new value
+   *
+   * @example
    *
    * ```ts
-   * const digit = regex(/^\d/).map(Number.parseInt);
-   * const { results } = digit.parse("23 and more");
-   * // [{value: 2, remaining: "3 and more", ...}]
-   *
-   * const natural = many0(digit).map((arr) => Number(arr.join("")));
-   * const { results } = natural.parse("23 and more");
-   * // [{value: 23, remaining: " and more", ...}]
+   * const digit = digit.map((d) => d + 41);
+   * digit.parse("123abc");
+   * // [{ value: 42, remaining: "23abc", ... }]
    * ```
    */
   map<U>(transform: (value: T) => U): Parser<U> {
     return createParser((input, position) => {
       const result = this.parse(input, position);
 
-      if (!result.success) return result;
+      if (!result.success) {
+        return result;
+      }
 
-      return {
-        success: true,
-        results: result.results.map(({ value, remaining, position }) => ({
+      const allResults = result.results
+        .map(({ value, remaining, position }) => ({
           value: transform(value),
           remaining,
           position,
-        })),
+        }));
+
+      return {
+        success: true,
+        results: allResults,
       };
     });
   }
