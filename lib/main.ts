@@ -20,8 +20,8 @@ export { sepBy0 } from "./combinators/iteration/sepBy0.ts";
 export { sepBy1 } from "./combinators/iteration/sepBy1.ts";
 export { lazy } from "./combinators/lazy-evaluation/lazy.ts";
 export { memoize } from "./combinators/lazy-evaluation/memoize.ts";
-export { bracket } from "./combinators/sequencing/bracket.ts";
 export { and } from "./combinators/sequencing/and.ts";
+export { between } from "./combinators/sequencing/between.ts";
 export { first } from "./combinators/sequencing/first.ts";
 export { last } from "./combinators/sequencing/last.ts";
 

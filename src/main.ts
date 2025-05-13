@@ -5,7 +5,7 @@ export {
   alphaNums,
   and,
   any,
-  bracket,
+  between,
   decimal,
   digit,
   fail,

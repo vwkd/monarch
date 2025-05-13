@@ -17,7 +17,7 @@ import { and } from "./and.ts";
  * // [{value: [1,2,3], remaining: ""}]
  * ```
  */
-export function bracket<T, U, V>(
+export function between<T, U, V>(
   openBracket: Parser<T>,
   body: Parser<U>,
   closeBracket: Parser<V>,
