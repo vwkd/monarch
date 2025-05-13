@@ -5,6 +5,7 @@ export {
   alphaNums,
   and,
   any,
+  around,
   between,
   decimal,
   digit,
