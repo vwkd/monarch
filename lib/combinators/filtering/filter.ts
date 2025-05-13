@@ -9,7 +9,7 @@ import { createParser, type Parser } from "../../../src/parser/main.ts";
  *
  * ```ts
  * const isVowel = (char) => ["a", "e", "i", "o", "u", "y"].includes(char);
- * const vowel = filter(take, isVowel).error("Expected a vowel");
+ * const vowel = filter(any, isVowel).error("Expected a vowel");
  *
  * const { results } = vowel.parse("a");
  * // [{value: 'a', remaining: '', ...}]

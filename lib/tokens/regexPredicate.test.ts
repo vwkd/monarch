@@ -1,7 +1,7 @@
 import { assertEquals } from "@std/assert";
-import { filter, regexPredicate, take } from "../main.ts";
+import { any, filter, regexPredicate } from "../main.ts";
 
-const even = filter(take, regexPredicate(/^[02468]/)).error(
+const even = filter(any, regexPredicate(/^[02468]/)).error(
   "Expected an even number",
 );
 

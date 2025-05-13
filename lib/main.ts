@@ -1,6 +1,6 @@
+export { any } from "./primitives/any.ts";
 export { fail } from "./primitives/fail.ts";
 export { result } from "./primitives/result.ts";
-export { take } from "./primitives/take.ts";
 
 export { all } from "./combinators/alternation/all.ts";
 export { optional } from "./combinators/choice/optional.ts";

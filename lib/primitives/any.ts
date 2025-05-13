@@ -10,18 +10,18 @@ import { updatePosition } from "../../src/utilities.ts";
  * @example Non-empty input
  *
  * ```ts
- * take.parse("abc");
+ * any.parse("abc");
  * // [{ value: "a", remaining: "bc", ... }]
  * ```
  *
  * @example Empty input
  *
  * ```ts
- * take.parse("");
+ * any.parse("");
  * // "Unexpected end of input"
  * ```
  */
-export const take: Parser<string> = createParser(
+export const any: Parser<string> = createParser(
   (input, position) => {
     if (input.length === 0) {
       return {

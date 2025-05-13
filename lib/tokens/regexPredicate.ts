@@ -9,7 +9,7 @@ import type { Predicate } from "../types.ts";
  *
  * ```ts
  * const isVowel = regexPredicate(/[aeiouy]/);
- * const vowel = filter(take, isVowel).error("Expected a vowel");
+ * const vowel = filter(any, isVowel).error("Expected a vowel");
  * vowel.parse("allo"); // [{value: 'a', remaining: 'llo', ...}]
  *
  * // vowel is equivalent to
