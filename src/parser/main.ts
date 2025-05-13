@@ -190,15 +190,17 @@ export class Parser<T> {
   }
 
   /**
-   * Customize the error message of a parser
+   * Sets the error message of the parser
    *
    * @example
    *
    * ```ts
-   * const even = regex(/^[02468]/).error("Expected an even number");
+   * const even = digit.error("Not a digit");
    *
-   * const { results } = even.parse("24"); // [{value: '2', remaining: '4', ...}]
-   * const { message } = even.parse("13"); // "Expected an even number"
+   * even.parse("123abc");
+   * // [{ value: 1, remaining: "23abc", ... }]
+   * even.parse("abc123");
+   * // "Not a digit"
    * ```
    */
   error(message: string): this {
