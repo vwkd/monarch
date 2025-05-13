@@ -1,26 +1,27 @@
 import type { Parser } from "../../../src/parser/main.ts";
-import { result } from "../../primitives/result.ts";
 import { and } from "./and.ts";
 
 /**
- * Utility combinator for the common open-body-close pattern
+ * A parser that discards the results of the first and last parsers
+ *
+ * @param start The first parser
+ * @param mid The parser in between
+ * @param end The last parser
+ * @returns A parser returning the result of the middle parser
  *
  * @example
- * ```ts
- * const listOfNumbers = bracket(
- *   literal("["),
- *   sepBy0(number, literal(",")),
- *   literal("]"),
- * );
  *
- * listOfNumbers.parse("[1,2,3]");
- * // [{value: [1,2,3], remaining: ""}]
+ * ```ts
+ * const text = between(digit, letter, digit);
+ *
+ * text.parse("1a2b3c");
+ * // [{ value: [ "a" ], remaining: "b3c", ... }]
  * ```
  */
 export function between<T, U, V>(
-  openBracket: Parser<T>,
-  body: Parser<U>,
-  closeBracket: Parser<V>,
+  start: Parser<T>,
+  mid: Parser<U>,
+  end: Parser<V>,
 ): Parser<U> {
-  return and(openBracket, body, closeBracket).chain((arr) => result(arr[1]));
+  return and(start, mid, end).map(([_, m, __]) => m);
 }
