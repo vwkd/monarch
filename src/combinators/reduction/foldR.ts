@@ -1,5 +1,4 @@
 import type { Parser } from "$core";
-import { fail } from "$core";
 import { many, seq } from "$combinators";
 
 /**
@@ -32,10 +31,10 @@ export const foldR = <T, O extends (a: T, b: T) => T>(
   max: number = Infinity,
 ): Parser<T> => {
   if (min < 1) {
-    return fail.error("foldR: min cannot be less than 1");
+    throw new Error("foldR: min cannot be less than 1");
   }
   if (max < min) {
-    return fail.error("foldR: max cannot be less than min");
+    throw new Error("foldR: max cannot be less than min");
   }
   if (min === 1 && max === 1) {
     return parser;

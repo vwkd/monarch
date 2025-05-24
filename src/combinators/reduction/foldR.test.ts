@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { foldR } from "$combinators";
 import { digit, literal } from "$common";
 import { parseErrors } from "../../errors.ts";
@@ -6,27 +6,24 @@ import { parseErrors } from "../../errors.ts";
 const caret = literal("^").map(() => (a: number, b: number) => a ** b);
 
 Deno.test("negative arguments", () => {
-  assertEquals(foldR(digit, caret, -3, -2).parse("6^5^4^3^2^1"), {
-    success: false,
-    message: "foldR: min cannot be less than 1",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => foldR(digit, caret, -3, -2).parse("6^5^4^3^2^1"),
+    "foldR: min cannot be less than 1",
+  );
 });
 
 Deno.test("argument order", () => {
-  assertEquals(foldR(digit, caret, 3, 2).parse("6^5^4^3^2^1"), {
-    success: false,
-    message: "foldR: max cannot be less than min",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => foldR(digit, caret, 3, 2).parse("6^5^4^3^2^1"),
+    "foldR: max cannot be less than min",
+  );
 });
 
 Deno.test("zero arguments", () => {
-  assertEquals(foldR(digit, caret, 0, 0).parse("6^5^4^3^2^1"), {
-    success: false,
-    message: "foldR: min cannot be less than 1",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => foldR(digit, caret, 0, 0).parse("6^5^4^3^2^1"),
+    "foldR: min cannot be less than 1",
+  );
 });
 
 Deno.test("4^3^2^1^a^b", () => {

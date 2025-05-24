@@ -1,5 +1,4 @@
 import type { Parser } from "$core";
-import { fail } from "$core";
 import { many } from "$combinators";
 
 /**
@@ -28,7 +27,7 @@ import { many } from "$combinators";
  */
 export const repeat = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
   if (times < 0) {
-    return fail.error("repeat: times cannot be negative");
+    throw new Error("repeat: times cannot be negative");
   }
   return many(parser, times, times);
 };

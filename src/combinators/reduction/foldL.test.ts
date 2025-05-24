@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { foldL } from "$combinators";
 import { digit, literal } from "$common";
 import { parseErrors } from "../../errors.ts";
@@ -6,27 +6,24 @@ import { parseErrors } from "../../errors.ts";
 const plus = literal("+").map(() => (a: number, b: number) => a + b);
 
 Deno.test("negative arguments", () => {
-  assertEquals(foldL(digit, plus, -3, -2).parse("1+2+3+4+5+6"), {
-    success: false,
-    message: "foldL: min cannot be less than 1",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => foldL(digit, plus, -3, -2).parse("1+2+3+4+5+6"),
+    "foldL: min cannot be less than 1",
+  );
 });
 
 Deno.test("argument order", () => {
-  assertEquals(foldL(digit, plus, 3, 2).parse("1+2+3+4+5+6"), {
-    success: false,
-    message: "foldL: max cannot be less than min",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => foldL(digit, plus, 3, 2).parse("1+2+3+4+5+6"),
+    "foldL: max cannot be less than min",
+  );
 });
 
 Deno.test("zero arguments", () => {
-  assertEquals(foldL(digit, plus, 0, 0).parse("1+2+3+4+5+6"), {
-    success: false,
-    message: "foldL: min cannot be less than 1",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => foldL(digit, plus, 0, 0).parse("1+2+3+4+5+6"),
+    "foldL: min cannot be less than 1",
+  );
 });
 
 Deno.test("1+2+3+4+a+b", () => {

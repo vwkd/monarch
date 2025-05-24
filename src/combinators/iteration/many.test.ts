@@ -1,22 +1,20 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { many } from "$combinators";
 import { digit } from "$common";
 import { parseErrors } from "../../errors.ts";
 
 Deno.test("negative arguments", () => {
-  assertEquals(many(digit, -3, -2).parse("abcdef"), {
-    success: false,
-    message: "many: min cannot be negative",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => many(digit, -3, -2).parse("abcdef"),
+    "many: min cannot be negative",
+  );
 });
 
 Deno.test("argument order", () => {
-  assertEquals(many(digit, 3, 2).parse("abcdef"), {
-    success: false,
-    message: "many: max cannot be less than min",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => many(digit, 3, 2).parse("abcdef"),
+    "many: max cannot be less than min",
+  );
 });
 
 Deno.test("zero arguments", () => {
