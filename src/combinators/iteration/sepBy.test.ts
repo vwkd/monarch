@@ -1,22 +1,20 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { sepBy } from "$combinators";
 import { digit, literal } from "$common";
 import { parseErrors } from "../../errors.ts";
 
 Deno.test("negative arguments", () => {
-  assertEquals(sepBy(digit, literal(","), -3, -2).parse("1,2,3,4,5,6"), {
-    success: false,
-    message: "sepBy: min cannot be negative",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => sepBy(digit, literal(","), -3, -2).parse("1,2,3,4,5,6"),
+    "sepBy: min cannot be negative",
+  );
 });
 
 Deno.test("argument order", () => {
-  assertEquals(sepBy(digit, literal(","), 3, 2).parse("1,2,3,4,5,6"), {
-    success: false,
-    message: "sepBy: max cannot be less than min",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => sepBy(digit, literal(","), 3, 2).parse("1,2,3,4,5,6"),
+    "sepBy: max cannot be less than min",
+  );
 });
 
 Deno.test("zero arguments", () => {

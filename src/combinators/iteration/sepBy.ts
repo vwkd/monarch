@@ -1,5 +1,5 @@
 import type { Parser } from "$core";
-import { fail, result } from "$core";
+import { result } from "$core";
 import { many } from "$combinators";
 
 /**
@@ -31,10 +31,10 @@ export const sepBy = <T, U>(
   max: number = Infinity,
 ): Parser<T[]> => {
   if (min < 0) {
-    return fail.error("sepBy: min cannot be negative");
+    throw new Error("sepBy: min cannot be negative");
   }
   if (max < min) {
-    return fail.error("sepBy: max cannot be less than min");
+    throw new Error("sepBy: max cannot be less than min");
   }
   if (max === 0 && min === 0) {
     return result([]);

@@ -1,5 +1,5 @@
 import type { Parser } from "$core";
-import { fail, result } from "$core";
+import { result } from "$core";
 
 /**
  * Recursive helper for `many`
@@ -60,10 +60,10 @@ export const many = <T>(
   max: number = Infinity,
 ): Parser<T[]> => {
   if (min < 0) {
-    return fail.error("many: min cannot be negative");
+    throw new Error("many: min cannot be negative");
   }
   if (max < min) {
-    return fail.error("many: max cannot be less than min");
+    throw new Error("many: max cannot be less than min");
   }
   if (max === 0 && min === 0) {
     return result([]);

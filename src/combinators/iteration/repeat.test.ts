@@ -1,14 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { repeat } from "$combinators";
 import { digit } from "$common";
 import { parseErrors } from "../../errors.ts";
 
 Deno.test("negative argument", () => {
-  assertEquals(repeat(digit, -1).parse("123456"), {
-    success: false,
-    message: "repeat: times cannot be negative",
-    position: { line: 1, column: 0 },
-  });
+  assertThrows(
+    () => repeat(digit, -1).parse("123456"),
+    "repeat: times cannot be negative",
+  );
 });
 
 Deno.test("zero argument", () => {
