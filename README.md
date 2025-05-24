@@ -188,7 +188,7 @@ Here the returned value is a number as `digit` and `natural` have the
 ### `seq`
 
 For a simple sequencing of parsers, use the
-`seq(parsers: Parser<?>[]): Parser<?[]>` combinator. The input parsers can have
+`seq(...parsers: Parser<?>[]): Parser<?[]>` combinator. The input parsers can have
 different types, which will be reflected in the resulting parser
 
 ```ts
