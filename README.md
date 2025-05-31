@@ -24,7 +24,7 @@ the provided base parsers and their error messages.
   - [Examples](#examples)
   - [Getting Started Guide](#getting-started-guide)
     - [`anyChar`](#anyChar)
-    - [`repeat`](#repeat)
+    - [`repeatN`](#repeatN)
     - [`literal`](#literal)
     - [`filter`](#filter)
     - [`regex`](#regex)
@@ -111,13 +111,13 @@ const { results } = anyChar.parse("hello"); // [{value: 'h', remaining: 'ello', 
 
 The return value is a string as `anyChar` is a `Parser<string>`
 
-### `repeat`
+### `repeatN`
 
 To apply a given parser a specific amount of times you can wrap it with the
-`repeat<T>(parser: Parser<T>, times: number): Parser<T>` combinator
+`repeatN<T>(parser: Parser<T>, times: number): Parser<T>` combinator
 
 ```js
-const { results } = repeat(anyChar, 2).parse("hello"); // [{value: 'he', remaining: 'llo', ...}]
+const { results } = repeatN(anyChar, 2).parse("hello"); // [{value: 'he', remaining: 'llo', ...}]
 ```
 
 ### `literal`

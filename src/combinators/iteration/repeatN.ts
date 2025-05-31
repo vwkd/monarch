@@ -13,7 +13,7 @@ import { many } from "$combinators";
  * @example List of numbers
  *
  * ```ts
- * const numbers = repeat(digit, 2);
+ * const numbers = repeatN(digit, 2);
  *
  * numbers.parse("123abc");
  * // [{ value: [1, 2], remaining: "3abc", ... }]
@@ -25,9 +25,9 @@ import { many } from "$combinators";
  *
  * @see {@linkcode many}
  */
-export const repeat = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
+export const repeatN = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
   if (times < 0) {
-    throw new Error("repeat: times cannot be negative");
+    throw new Error("repeatN: times cannot be negative");
   }
   return many(parser, times, times);
 };
