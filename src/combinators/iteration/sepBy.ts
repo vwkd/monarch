@@ -1,6 +1,6 @@
 import type { Parser } from "$core";
 import { result } from "$core";
-import { many } from "$combinators";
+import { repeat } from "$combinators";
 
 /**
  * Repeats a parser and a separator greedily between min and max times, inclusive
@@ -43,7 +43,7 @@ export const sepBy = <T, U>(
   const minRemaining = Math.max(0, min - 1);
   const maxRemaining = Math.max(0, max - 1);
   const separatorItem = separator.flatMap(() => parser);
-  const separatorItems = many(separatorItem, minRemaining, maxRemaining);
+  const separatorItems = repeat(separatorItem, minRemaining, maxRemaining);
 
   if (min === 0) {
     return parser

@@ -1,15 +1,15 @@
 import type { Parser } from "$core";
-import { many } from "$combinators";
+import { repeat } from "$combinators";
 
 /**
  * Repeats a parser greedily 1 or more times
  *
- * - alias for `many(parser, 1)`
+ * - alias for `repeat(parser, 1)`
  *
  * @example List of numbers
  *
  * ```ts
- * const numbers = many1(digit);
+ * const numbers = repeat1(digit);
  *
  * numbers.parse("123abc");
  * // [{ value: [1, 2, 3], remaining: "abc", ... }]
@@ -19,6 +19,6 @@ import { many } from "$combinators";
  * // message: "Expected a digit"
  * ```
  *
- * @see {@linkcode many}
+ * @see {@linkcode repeat}
  */
-export const many1 = <T>(parser: Parser<T>): Parser<T[]> => many(parser, 1);
+export const repeat1 = <T>(parser: Parser<T>): Parser<T[]> => repeat(parser, 1);

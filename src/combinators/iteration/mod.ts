@@ -5,9 +5,9 @@
  */
 
 export { iterate } from "./iterate.ts";
-export { many } from "./many.ts";
-export { many0 } from "./many0.ts";
-export { many1 } from "./many1.ts";
+export { repeat } from "./repeat.ts";
+export { repeat0 } from "./repeat0.ts";
+export { repeat1 } from "./repeat1.ts";
 export { repeatN } from "./repeatN.ts";
 export { sepBy } from "./sepBy.ts";
 export { sepBy0 } from "./sepBy0.ts";

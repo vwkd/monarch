@@ -6,7 +6,7 @@
  * @module
  */
 
-import { alt, between, many0, sepBy0, seq } from "$combinators";
+import { alt, between, repeat0, sepBy0, seq } from "$combinators";
 import { literal, regex, whitespaces, whitespaces1 } from "$common";
 import { createParser, type Parser } from "$core";
 import { fail, result } from "$core";
@@ -142,7 +142,7 @@ const startTag: Parser<
 > = seq(
   literal("<"),
   tagName,
-  many0(attribute),
+  repeat0(attribute),
   regex(/\/?>/),
 ).error("Expected a start tag").flatMap(([_, tagName, attributes, end]) => {
   const selfClosing = end === "/>";
@@ -235,7 +235,7 @@ export const element: Parser<MElement> = createParser((input, position) => {
 /**
  * The fragments parser
  */
-export const fragments: Parser<MFragment> = many0(
+export const fragments: Parser<MFragment> = repeat0(
   alt<MNode>(rawText, element, comment),
 );
 

@@ -28,7 +28,7 @@ the provided base parsers and their error messages.
     - [`literal`](#literal)
     - [`filter`](#filter)
     - [`regex`](#regex)
-    - [`many`](#many)
+    - [`repeat`](#repeat)
     - [`map`](#map)
     - [`seq`](#seq)
     - [`flatMap`](#flatmap)
@@ -157,15 +157,16 @@ const { results } = even.parse("24"); // [{value: '2', remaining: '4', ...}]
 const { message } = even.parse("ab"); // "Expected an even number"
 ```
 
-### `many`
+### `repeat`
 
 To apply a given parser as many times as possible (0 or more), wrap it with the
-`many0<T>(parser: Parser<T>): Parser<T[]>` combinator. To apply the given parser
-1 or more times, use `many1`. Its success return value is an array of `T` values
+`repeat0<T>(parser: Parser<T>): Parser<T[]>` combinator. To apply the given
+parser 1 or more times, use `repeat1`. Its success return value is an array of
+`T` values
 
 ```js
 const digit = regex(/^\d/);
-const { results } = many0(digit).parse("23 and more"); // [{value: ["2", "3"], remaining: " and more", ...}]
+const { results } = repeat0(digit).parse("23 and more"); // [{value: ["2", "3"], remaining: " and more", ...}]
 ```
 
 ### `map`
@@ -178,7 +179,7 @@ value
 const digit = regex(/^\d/).map(Number.parseInt);
 const { results } = digit.parse("23 and more"); // [{value: 2, remaining: "3 and more", ...}]
 
-const natural = many0(digit).map((arr) => Number(arr.join("")));
+const natural = repeat0(digit).map((arr) => Number(arr.join("")));
 const { results } = natural.parse("23 and more"); // [{value: 23, remaining: " and more", ...}]
 ```
 
@@ -208,7 +209,7 @@ lifted as a parser.
 
 ```ts
 const letter = regex(/^[a-zA-Z]/);
-const alphanumeric = many0(regex(/^\w/)); // Parser<string[]>
+const alphanumeric = repeat0(regex(/^\w/)); // Parser<string[]>
 const identifier = letter.flatMap((l) =>
   alphanumeric.map((rest) => [l, ...rest].join(""))
 );
@@ -354,7 +355,7 @@ directly referencing `expr` which is not yet defined.
 ### `iterate`
 
 The `iterate<T>(parser: T): Parser<T[]>` combinator applies a given parser many
-times, like the `many` combinator, but returns all the intermediate results.
+times, like the `repeat` combinator, but returns all the intermediate results.
 
 ```ts
 iterate(digit).parse("42"); // results: [{value: [4, 2], remaining: ""}, {value: [4], remaining: "2"}, {value: [], remaining: "42"}]

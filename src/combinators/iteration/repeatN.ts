@@ -1,10 +1,10 @@
 import type { Parser } from "$core";
-import { many } from "$combinators";
+import { repeat } from "$combinators";
 
 /**
  * Repeats a parser a specific number of times
  *
- * - alias for `many(parser, times, times)`
+ * - alias for `repeat(parser, times, times)`
  *
  * @param parser The parser
  * @param times The specific number of times the parser must succeed
@@ -23,11 +23,11 @@ import { many } from "$combinators";
  * // message: "Expected a digit"
  * ```
  *
- * @see {@linkcode many}
+ * @see {@linkcode repeat}
  */
 export const repeatN = <T>(parser: Parser<T>, times: number): Parser<T[]> => {
   if (times < 0) {
     throw new Error("repeatN: times cannot be negative");
   }
-  return many(parser, times, times);
+  return repeat(parser, times, times);
 };

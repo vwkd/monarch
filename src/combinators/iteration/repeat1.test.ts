@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
-import { many1 } from "$combinators";
+import { repeat1 } from "$combinators";
 import { digit } from "$common";
 import { parseErrors } from "../../errors.ts";
 
 Deno.test("123abc", () => {
-  assertEquals(many1(digit).parse("123abc"), {
+  assertEquals(repeat1(digit).parse("123abc"), {
     success: true,
     results: [{
       value: [1, 2, 3],
@@ -15,7 +15,7 @@ Deno.test("123abc", () => {
 });
 
 Deno.test("12abcd", () => {
-  assertEquals(many1(digit).parse("12abcd"), {
+  assertEquals(repeat1(digit).parse("12abcd"), {
     success: true,
     results: [{
       value: [1, 2],
@@ -26,7 +26,7 @@ Deno.test("12abcd", () => {
 });
 
 Deno.test("1abcde", () => {
-  assertEquals(many1(digit).parse("1abcde"), {
+  assertEquals(repeat1(digit).parse("1abcde"), {
     success: true,
     results: [{
       value: [1],
@@ -37,7 +37,7 @@ Deno.test("1abcde", () => {
 });
 
 Deno.test("abcdef", () => {
-  assertEquals(many1(digit).parse("abcdef"), {
+  assertEquals(repeat1(digit).parse("abcdef"), {
     success: false,
     message: parseErrors.digit,
     position: { line: 1, column: 0 },
@@ -45,7 +45,7 @@ Deno.test("abcdef", () => {
 });
 
 Deno.test("empty string", () => {
-  assertEquals(many1(digit).parse(""), {
+  assertEquals(repeat1(digit).parse(""), {
     success: false,
     message: parseErrors.digit,
     position: { line: 1, column: 0 },

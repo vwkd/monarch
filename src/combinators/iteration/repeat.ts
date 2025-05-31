@@ -12,7 +12,7 @@ import { result } from "$core";
  * @example List of numbers
  *
  * ```ts
- * const numbers = many(digit, 2, 3);
+ * const numbers = repeat(digit, 2, 3);
  *
  * numbers.parse("1234ab");
  * // [{ value: [1, 2, 3], remaining: "4ab", ... }]
@@ -22,26 +22,26 @@ import { result } from "$core";
  * // message: "Expected a digit"
  * ```
  */
-export const many = <T>(
+export const repeat = <T>(
   parser: Parser<T>,
   min: number,
   max: number = Infinity,
 ): Parser<T[]> => {
   if (min < 0) {
-    throw new Error("many: min cannot be negative");
+    throw new Error("repeat: min cannot be negative");
   }
   if (max < min) {
-    throw new Error("many: max cannot be less than min");
+    throw new Error("repeat: max cannot be less than min");
   }
   if (max === 0 && min === 0) {
     return result([]);
   }
 
-  return manyRecursive(parser, min, max, 0, []);
+  return repeatRecursive(parser, min, max, 0, []);
 };
 
 /**
- * Recursive helper for `many`
+ * Recursive helper for `repeat`
  *
  * @param parser The parser
  * @param min The minimum number of times the parser must succeed
@@ -50,7 +50,7 @@ export const many = <T>(
  * @param acc The accumulator for the parsed values
  * @returns A parser returning an array of parse results
  */
-const manyRecursive = <T>(
+const repeatRecursive = <T>(
   parser: Parser<T>,
   min: number,
   max: number,
@@ -62,7 +62,7 @@ const manyRecursive = <T>(
   }
 
   const rest = parser.flatMap((item) =>
-    manyRecursive(parser, min, max, count + 1, [...acc, item])
+    repeatRecursive(parser, min, max, count + 1, [...acc, item])
   );
 
   if (count >= min) {

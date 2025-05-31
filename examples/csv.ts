@@ -4,7 +4,7 @@
  * @module
  */
 
-import { alt, between, many1, sepBy0 } from "$combinators";
+import { alt, between, repeat1, sepBy0 } from "$combinators";
 import { letters, literal, natural, newline, spaces, token } from "$common";
 import type { Parser } from "$core";
 import { result } from "$core";
@@ -46,7 +46,7 @@ export const row: Parser<(string | number)[]> = sepBy0(item, comma)
   .skipTrailing(
     newline,
   );
-const rows = many1(row);
+const rows = repeat1(row);
 
 /**
  * Parses a csv file

@@ -1,5 +1,5 @@
 import type { Parser } from "$core";
-import { many, seq } from "$combinators";
+import { repeat, seq } from "$combinators";
 
 /**
  * Repeats a parser and a right-associative operator parser greedily between min and max times, inclusive
@@ -41,7 +41,7 @@ export const foldR = <T, O extends (a: T, b: T) => T>(
   }
 
   const operatorItem = seq(operator, parser);
-  const operatorItems = many(operatorItem, min - 1, max - 1);
+  const operatorItems = repeat(operatorItem, min - 1, max - 1);
 
   return parser.flatMap((firstItem) =>
     operatorItems.map((pairs) => {
