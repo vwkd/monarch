@@ -24,7 +24,6 @@ the provided base parsers and their error messages.
   - [Examples](#examples)
   - [Getting Started Guide](#getting-started-guide)
     - [`anyChar`](#anyChar)
-    - [`repeatN`](#repeatN)
     - [`literal`](#literal)
     - [`filter`](#filter)
     - [`regex`](#regex)
@@ -111,15 +110,6 @@ const { results } = anyChar.parse("hello"); // [{value: 'h', remaining: 'ello', 
 
 The return value is a string as `anyChar` is a `Parser<string>`
 
-### `repeatN`
-
-To apply a given parser a specific amount of times you can wrap it with the
-`repeatN<T>(parser: Parser<T>, times: number): Parser<T>` combinator
-
-```js
-const { results } = repeatN(anyChar, 2).parse("hello"); // [{value: 'he', remaining: 'llo', ...}]
-```
-
 ### `literal`
 
 To match against a specific character or keyword use the
@@ -167,6 +157,13 @@ parser 1 or more times, use `repeat1`. Its success return value is an array of
 ```js
 const digit = regex(/^\d/);
 const { results } = repeat0(digit).parse("23 and more"); // [{value: ["2", "3"], remaining: " and more", ...}]
+```
+
+To apply a given parser a specific amount of times you can wrap it with the
+`repeatN<T>(parser: Parser<T>, times: number): Parser<T>` combinator
+
+```js
+const { results } = repeatN(anyChar, 2).parse("hello"); // [{value: 'he', remaining: 'llo', ...}]
 ```
 
 ### `map`
